@@ -1,0 +1,69 @@
+---
+# Source: web-depl-website/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web-depl
+  name: web-depl
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: web-depl
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+# Source: web-depl-website/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-depl
+  name: web-depl
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: web-depl
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: web-depl
+    spec:
+      imagePullSecrets:
+        - name: 
+      containers:
+      - image: localhost:5000/static-website
+        name: web-depl-hrgqblmpuh
+        ports:
+          - containerPort: 80
+        resources: {}
+---
+# Source: web-depl-website/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  creationTimestamp: null
+  name: web-depl
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: web-depl
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
