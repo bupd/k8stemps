@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: web-depl
+  name: web-depl
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: web-depl
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: web-depl
+    spec:
+      containers:
+      - image: bupd/static-website
+        name: static-website
+        resources: {}
+status: {}
