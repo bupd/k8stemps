@@ -1,0 +1,6 @@
+appName: web-depl
+imageName: localhost:5000/static-website
+serviceName: web-depl
+serviceAddress: web-depl
+servicePort: 8080
+replicas: 5
