@@ -17,3 +17,7 @@ spec:
       containers:
         - name: synergychat-api
           image: 'localhost:5000/synergychat-api:latest'
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: synergychat-api-configmap
