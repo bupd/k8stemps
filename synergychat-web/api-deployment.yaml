@@ -14,10 +14,19 @@ spec:
       labels:
         app: synergychat-api
     spec:
+      volumes:
+        - name: cache-volume
+          emptyDir: {}
+        - name: synergychat-api-volume
+          persistentVolumeClaim:
+            claimName: synergychat-api-pvc
       containers:
         - name: synergychat-api
           image: 'localhost:5000/synergychat-api:latest'
           imagePullPolicy: Never
+          volumeMounts:
+            - name: synergychat-api-volume
+              mountPath: /persist
           envFrom:
             - configMapRef:
                 name: synergychat-api-configmap
