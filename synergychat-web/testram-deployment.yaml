@@ -1,0 +1,32 @@
+
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: synergychat-testram
+  labels:
+    app: synergychat-testram
+spec:
+  selector:
+    matchLabels:
+      app: synergychat-testram
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: synergychat-testram
+    spec:
+      # initContainers:
+        # Init containers are exactly like regular containers, except:
+          # - Init containers always run to completion.
+          # - Each init container must complete successfully before the next one starts.
+      containers:
+      - name: synergychat-testram
+        image: "localhost:5000/synergychat-testram:latest"
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 250Mi
+        envFrom:
+          - configMapRef:
+              name: synergychat-testram-configmap
