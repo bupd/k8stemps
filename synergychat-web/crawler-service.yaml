@@ -5,6 +5,7 @@ metadata:
   labels:
     app: crawler-service
   name: crawler-service
+  namespace: crawler
 spec:
   ports:
   - name: 80-8080
