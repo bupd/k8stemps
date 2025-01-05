@@ -1,5 +1,5 @@
 appName: web-depl
-imageName: localhost:5000/static-website
+imageName: bupd/static-website
 serviceName: web-depl
 serviceAddress: web-depl
 servicePort: 8080
