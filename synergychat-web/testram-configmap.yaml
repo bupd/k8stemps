@@ -5,4 +5,4 @@ metadata:
   name: synergychat-testram-configmap
   namespace: default
 data:
-  MEGABYTES: "200"
+  MEGABYTES: "2000"
