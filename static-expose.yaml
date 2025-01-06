@@ -3,15 +3,15 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: static-website
-  name: static-service
+    app: web
+  name: web-service
 spec:
   ports:
   - port: 80
     protocol: TCP
-    targetPort: 80
+    targetPort: 8080
   selector:
-    app: static-website
+    app: web
   type: LoadBalancer
 status:
   loadBalancer: {}
