@@ -10,7 +10,12 @@ metadata:
     kubernetes.io/ingress.allow-http: "true"
     # This tells Google Cloud to associate the External Load Balancer with the static IP which we created earlier
     kubernetes.io/ingress.global-static-ip-name: web-ip
+    cert-manager.io/issuer: letsencrypt-staging
 spec:
+  tls:
+    - secretName: web-ssl
+      hosts:
+        - registry.bupd.xyz
   defaultBackend:
     service:
       name: web
