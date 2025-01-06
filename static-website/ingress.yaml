@@ -15,7 +15,7 @@ spec:
   tls:
     - secretName: web-ssl
       hosts:
-        - registry.bupd.xyz
+        - reg.bupd.xyz
   defaultBackend:
     service:
       name: web
