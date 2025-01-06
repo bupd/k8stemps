@@ -5,6 +5,7 @@ metadata:
   labels:
     app: static-website
   name: static-service
+  namespace: static-website
 spec:
   ports:
   - port: 80
