@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: static-ingressroute
+  namespace: static-website
+spec:
+  entryPoints:
+  - websecure
+  routes:
+  - match: Host(`test.potta.reg.bupd.xyz`)
+    kind: Rule
+    services:
+    - name: static-website
+      port: 80
+  tls:
+    secretName: static-certificate-secret
