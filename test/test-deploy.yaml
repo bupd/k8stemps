@@ -1,0 +1,47 @@
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-website
+  namespace: static-website
+  labels:
+    app: static-website
+spec:
+  selector:
+    matchLabels:
+      app: static-website
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: static-website
+    spec:
+      # initContainers:
+      # Init containers are exactly like regular containers, except:
+      # - Init containers always run to completion.
+      # - Each init container must complete successfully before the next one starts.
+      containers:
+        - name: static-website
+          image: "docker.io/bupd/static-website:latest"
+          imagePullPolicy: IfNotPresent
+---
+# Create service for the test deployment
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: static-website
+  name: static-website
+  namespace: static-website
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: static-website
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
