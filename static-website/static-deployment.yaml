@@ -13,8 +13,6 @@ spec:
   replicas: 1
   template:
     metadata:
-      annotations:
-        kubectl.kubernetes.io/default-container: static-website
       labels:
         app: static-website
     spec:
@@ -26,5 +24,3 @@ spec:
         - name: static-website
           image: "docker.io/bupd/static-website:latest"
           imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 80
