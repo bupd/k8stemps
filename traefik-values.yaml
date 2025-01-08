@@ -6,4 +6,4 @@ ingressRoute:
   dashboard:
     enabled: true
     entryPoints: [web, websecure]
-    matchRule: Host(`traefik-dashboard.potta.reg.bupd.xyz`)
+    matchRule: Host(`traefik-dash.potta.registry.bupd.xyz`)
