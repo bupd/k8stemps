@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: static-ingressroute-certificate
+  namespace: static-website
+spec:
+  secretName: static-certificate-secret
+  issuerRef:
+    name: cloudflare-clusterissuer
+    kind: ClusterIssuer
+  dnsNames:
+    - test.potta.registry.bupd.xyz
