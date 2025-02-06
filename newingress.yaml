@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{"cert-manager.io/cluster-issuer":"letsencrypt-prod","kubernetes.io/ingress.class":"nginx"},"name":"harbor-ingress","namespace":"harborkumar"},"spec":{"rules":[{"host":"harbor1.kube.bupd.xyz","http":{"paths":[{"backend":{"service":{"name":"harborkumar","port":{"number":30002}}},"path":"/","pathType":"Prefix"}]}}],"tls":[{"hosts":["harbor1.kube.bupd.xyz"],"secretName":"harbor-cert-tls"}]}}
+    kubernetes.io/ingress.class: nginx
+  creationTimestamp: "2025-01-28T01:32:27Z"
+  generation: 3
+  name: harbor-ingress
+  namespace: harborkumar
+  resourceVersion: "1883266828"
+  uid: 0d96a779-1b75-44ec-a9aa-4c7e299551c0
+spec:
+  rules:
+  - host: harbor1.kube.bupd.xyz
+    http:
+      paths:
+      - backend:
+          service:
+            name: harborkumar
+            port:
+              number: 30002
+        path: /harbor
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-core
+            port:
+              number: 80
+        path: /core
+        pathType: Prefix
+  tls:
+  - hosts:
+    - harbor1.kube.bupd.xyz
+    secretName: harbor-cert-tls
+status:
+  loadBalancer:
+    ingress:
+    - ip: 51.158.57.178
