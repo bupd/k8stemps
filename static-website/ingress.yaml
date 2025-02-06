@@ -2,7 +2,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: web-ingress
+  name: static-web-ingress
+  namespace: static-website
   annotations:
     # This tells Google Cloud to create an External Load Balancer to realize this Ingress
     kubernetes.io/ingress.class: gce
@@ -12,12 +13,14 @@ metadata:
     kubernetes.io/ingress.global-static-ip-name: web-ip
     cert-manager.io/issuer: letsencrypt-staging
 spec:
-  tls:
-    - secretName: web-ssl
-      hosts:
-        - reg.bupd.xyz
-  defaultBackend:
-    service:
-      name: web
-      port:
-        number: 8080
+  rules:
+  - host: 51-158-57-178.lb.fr-par.scw.cloud
+    http:
+      paths:
+      - path: /static
+        pathType: Prefix
+        backend:
+          service:
+            name: static-website
+            port:
+              number: 80
