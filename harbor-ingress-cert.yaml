@@ -1,0 +1,80 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-cert-tls
+  namespace: htest
+spec:
+  secretName: harbor-cert-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: htest.kube.bupd.xyz
+  dnsNames:
+  - htest.kube.bupd.xyz
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+  name: harbor-ingress
+  namespace: htest
+spec:
+  rules:
+  - host: htest.kube.bupd.xyz
+    http:
+      paths:
+      - backend:
+          service:
+            name: harbor-svc
+            port:
+              number: 80
+        path: /kumar
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-portal
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-core
+            port:
+              number: 80
+        path: /c/
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-core
+            port:
+              number: 80
+        path: /v2/
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-core
+            port:
+              number: 80
+        path: /api/
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-database
+            port:
+              number: 5432
+        path: /db/
+        pathType: Prefix
+      - backend:
+          service:
+            name: harbor-core
+            port:
+              number: 80
+        path: /service/
+        pathType: Prefix
+  tls:
+  - hosts:
+    - htest.kube.bupd.xyz
+    secretName: harbor-cert-tls
