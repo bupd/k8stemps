@@ -516,8 +516,8 @@ nginx:
 
 portal:
   image:
-    repository: ttl.sh/bupd/harbor-portal
-    tag: v2.12.2
+    repository: goharbor/harbor-portal
+    tag: v2.12.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -556,8 +556,8 @@ portal:
 
 core:
   image:
-    repository: ttl.sh/bupd/harbor-core
-    tag: v2.12.2
+    repository: goharbor/harbor-core
+    tag: v2.12.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -643,8 +643,8 @@ core:
 
 jobservice:
   image:
-    repository: ttl.sh/bupd/harbor-jobservice
-    tag: v2.12.2
+    repository: goharbor/harbor-jobservice
+    tag: v2.12.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -1031,8 +1031,8 @@ redis:
 
 exporter:
   image:
-    repository: ttl.sh/bupd/harbor-exporter
-    tag: v2.12.2
+    repository: goharbor/harbor-exporter
+    tag: v2.12.0
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
