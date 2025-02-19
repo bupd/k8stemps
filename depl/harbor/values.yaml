@@ -706,8 +706,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: goharbor/registry-photon
-      tag: v2.12.0
+      repository: ttl.sh/harbor/registry
+      tag: v3.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -792,12 +792,12 @@ registry:
 
 trivy:
   # enabled the flag to enable Trivy scanner
-  enabled: false
+  enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: goharbor/trivy-adapter-photon
+    repository: ttl.sh/harbor/trivy-adapter
     # tag the tag for Trivy adapter image
-    tag: v2.12.0
+    tag: v3.2
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
