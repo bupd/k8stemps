@@ -7,6 +7,9 @@ metadata:
 {{ include "harbor.labels" . | indent 4 }}
 spec:
   ports:
+    - name: "debug-port"
+      port: 4001
+      targetPort: 4001
     - name: {{ ternary "https-jobservice" "http-jobservice" .Values.internalTLS.enabled }}
       port: {{ template "harbor.jobservice.servicePort" . }}
       targetPort: {{ template "harbor.jobservice.containerPort" . }}

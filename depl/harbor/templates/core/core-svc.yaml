@@ -14,6 +14,9 @@ spec:
   type: NodePort
 {{- end }}
   ports:
+    - name: "debug-port"
+      port: 4001
+      targetPort: 4001
     - name: {{ ternary "https-web" "http-web" .Values.internalTLS.enabled }}
       port: {{ template "harbor.core.servicePort" . }}
       targetPort: {{ template "harbor.core.containerPort" . }}

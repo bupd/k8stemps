@@ -648,8 +648,8 @@ core:
 
 jobservice:
   image:
-    repository: goharbor/harbor-jobservice
-    tag: v2.12.0
+    repository: ttl.sh/harbor-next/jobservice
+    tag: debug-dlv
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token

@@ -20,7 +20,7 @@ expose:
     auto:
       # The common name used to generate the certificate, it's necessary
       # when the type isn't "ingress"
-      commonName: "htest.kube.bupd.xyz"
+      commonName: "debug.kube.bupd.xyz"
     secret:
       # The name of secret which contains keys named:
       # "tls.crt" - the certificate
@@ -112,7 +112,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://htest.kube.bupd.xyz
+externalURL: https://debug.kube.bupd.xyz
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -391,7 +391,7 @@ enableMigrateHelmHook: false
 # uaaSecretName:
 
 metrics:
-  enabled: false
+  enabled: true
   core:
     path: /metrics
     port: 8001
@@ -473,14 +473,16 @@ cache:
 ## each of the conatiner will apply the same security context
 ## containerSecurityContext:{} is initially an empty yaml that you could edit it on demand, we just filled with a common template for convenience
 containerSecurityContext:
-  privileged: false
-  allowPrivilegeEscalation: false
+  privileged: true
+  allowPrivilegeEscalation: true
+  appArmorProfile:
+    type: Unconfined
   seccompProfile:
-    type: RuntimeDefault
-  runAsNonRoot: true
+    type: Unconfined
+  runAsNonRoot: false
   capabilities:
-    drop:
-      - ALL
+    add:
+      - SYS_PTRACE
 
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
@@ -556,8 +558,8 @@ portal:
 
 core:
   image:
-    repository: goharbor/harbor-core
-    tag: v2.12.0
+    repository: ttl.sh/harbor-next/core
+    tag: debug-dlv
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -643,8 +645,10 @@ core:
 
 jobservice:
   image:
-    repository: goharbor/harbor-jobservice
-    tag: v2.12.0
+    repository: ttl.sh/harbor-next/jobservice
+    tag: debug-dlvd
+    # repository: goharbor/harbor-jobservice
+    # tag: v2.12.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -706,8 +710,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: ttl.sh/harbor/registry
-      tag: v3.0
+      repository: goharbor/registry-photon
+      tag: v2.12.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -795,9 +799,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: ttl.sh/harbor/trivy-adapter
+    repository: goharbor/trivy-adapter-photon
     # tag the tag for Trivy adapter image
-    tag: v3.2
+    tag: v2.12.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
