@@ -15,31 +15,22 @@ spec:
         app: ground-control
     spec:
       initContainers:
-      - name: check-db-ready
-        image: postgres:17
-        command:
-          - "sh"
-          - "-c"
-          - |
-            until pg_isready -h postgres -p 5432; do
-              echo "waiting for database"
-              sleep 10
-            done
-            echo "Database is ready"
-            # Set PGPASSWORD environment variable to the password used for postgres user
-            export PGPASSWORD="${DB_PASSWORD}"
-            # Check if the database exists
-            if ! psql -h postgres -U postgres -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_DATABASE}'" | grep -q 1; then
-              echo "Database ${DB_DATABASE} does not exist, creating it."
-              psql -h postgres -U postgres -d postgres -c "CREATE DATABASE ${DB_DATABASE}"
-            else
-              echo "Database ${DB_DATABASE} already exists."
-            fi
+      - name: init-migrations
+        image: "{{ .Values.image.initcontainers.repository }}:{{ .Values.image.initcontainers.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-        - name: DB_DATABASE
-          value: "{{ .Values.env.DB_DATABASE }}"  # Use the value from your values.yaml
-        - name: DB_PASSWORD
-          value: "{{ .Values.env.DB_PASSWORD }}"  # Ensure DB_PASSWORD is passed here
+          - name: DB_HOST
+            value: "{{ .Values.env.DB_HOST }}"
+          - name: DB_PORT
+            value: "{{ .Values.env.DB_PORT }}"
+          - name: DB_DATABASE
+            value: "{{ .Values.env.DB_DATABASE }}"
+          - name: DB_USERNAME
+            value: "{{ .Values.env.DB_USERNAME }}"
+          - name: DB_PASSWORD
+            value: "{{ .Values.env.DB_PASSWORD }}"
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
       containers:
         - name: ground-control
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

@@ -4,7 +4,10 @@
 image:
   repository: "8gears.container-registry.com/harbor-satellite/ground-control"
   tag: "latest"
-  pullPolicy: "IfNotPresent"
+  pullPolicy: "Always"
+  initcontainers:
+    repository: "8gears.container-registry.com/harbor-satellite/db-migrator"
+    tag: "latest"
 
 # Image pull secrets (for private Docker registry)
 imagePullSecrets:
@@ -51,6 +54,7 @@ postgresql:
   auth:
     password: password
     username: postgres
+    database: groundcontrol
 
   commonLabels:
     name: postgres
