@@ -15,15 +15,15 @@ replicaCount: 1
 
 # Environment variables for the Ground Control Go app
 env:
-  DB_HOST: "nozomi.proxy.rlwy.net"      # Update with the DB host
-  DB_PORT: "50493"                       # Update with the DB port
-  DB_DATABASE: "railway"                 # Update with the DB name
-  DB_USERNAME: "postgres"                # Update with the DB username
-  DB_PASSWORD: "KByJJJOCzpmwxDZuSyOeFhArCoXRTMHR"  # Update with the DB password
+  DB_HOST: "postgres" # Update with the DB host
+  DB_PORT: "5432" # Update with the DB port
+  DB_DATABASE: "groundcontrol" # Update with the DB name
+  DB_USERNAME: "postgres" # Update with the DB username
+  DB_PASSWORD: "password" # Update with the DB password
   APP_ENV: "local"
   AIR_TOML_LOG_LEVEL: "debug"
-  PORT: "8080"  # Ensure PORT is set here
-  HARBOR_USERNAME: "admin"  # Add Harbor credentials
+  PORT: "8080" # Ensure PORT is set here
+  HARBOR_USERNAME: "admin" # Add Harbor credentials
   HARBOR_PASSWORD: "Harbor12345"
   HARBOR_URL: "https://harbor-sat.bupd.xyz"
 
@@ -32,7 +32,7 @@ service:
   name: "gc"
   port: 80
   targetPort: 8080
-  type: ClusterIP  # Can be NodePort or LoadBalancer if needed
+  type: ClusterIP # Can be NodePort or LoadBalancer if needed
 
 # Ingress configuration
 ingress:
@@ -42,3 +42,37 @@ ingress:
 
 # Namespace for resources
 namespace: "grounded"
+
+# for postgres dependency
+postgresql:
+  fullnameOverride: postgres
+  image:
+    tag: 17
+  auth:
+    password: password
+    username: postgres
+
+  commonLabels:
+    name: postgres
+    component: database
+    manager: helm
+
+# Values for the deployment of the configmap for the postgresql
+configmap:
+  name: postgres-configmap
+
+# Values for the deployment of your app
+app:
+  name: ground-control
+  component: frontend
+  manager: helm
+
+initContainers:
+  name: check-db-ready
+  image: postgres:17
+  command: [
+      "sh",
+      "-c",
+      "until pg_isready -h postgres -p 5432;
+      do echo waiting for database; sleep 5; done;",
+    ]

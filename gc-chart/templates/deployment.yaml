@@ -14,10 +14,39 @@ spec:
       labels:
         app: ground-control
     spec:
+      initContainers:
+      - name: check-db-ready
+        image: postgres:17
+        command:
+          - "sh"
+          - "-c"
+          - |
+            until pg_isready -h postgres -p 5432; do
+              echo "waiting for database"
+              sleep 10
+            done
+            echo "Database is ready"
+            # Set PGPASSWORD environment variable to the password used for postgres user
+            export PGPASSWORD="${DB_PASSWORD}"
+            # Check if the database exists
+            if ! psql -h postgres -U postgres -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = '${DB_DATABASE}'" | grep -q 1; then
+              echo "Database ${DB_DATABASE} does not exist, creating it."
+              psql -h postgres -U postgres -d postgres -c "CREATE DATABASE ${DB_DATABASE}"
+            else
+              echo "Database ${DB_DATABASE} already exists."
+            fi
+        env:
+        - name: DB_DATABASE
+          value: "{{ .Values.env.DB_DATABASE }}"  # Use the value from your values.yaml
+        - name: DB_PASSWORD
+          value: "{{ .Values.env.DB_PASSWORD }}"  # Ensure DB_PASSWORD is passed here
       containers:
         - name: ground-control
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configmap.name }}
           env:
             - name: DB_HOST
               value: "{{ .Values.env.DB_HOST }}"
