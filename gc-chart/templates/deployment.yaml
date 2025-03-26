@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ground-control
+  labels:
+    app: ground-control
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: ground-control
+  template:
+    metadata:
+      labels:
+        app: ground-control
+    spec:
+      containers:
+        - name: ground-control
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DB_HOST
+              value: "{{ .Values.env.DB_HOST }}"
+            - name: DB_PORT
+              value: "{{ .Values.env.DB_PORT }}"
+            - name: DB_DATABASE
+              value: "{{ .Values.env.DB_DATABASE }}"
+            - name: DB_USERNAME
+              value: "{{ .Values.env.DB_USERNAME }}"
+            - name: DB_PASSWORD
+              value: "{{ .Values.env.DB_PASSWORD }}"
+            - name: APP_ENV
+              value: "{{ .Values.env.APP_ENV }}"
+            - name: AIR_TOML_LOG_LEVEL
+              value: "{{ .Values.env.AIR_TOML_LOG_LEVEL }}"
+            - name: PORT
+              value: "{{ .Values.env.PORT }}"  # Add PORT here
+            - name: HARBOR_USERNAME
+              value: "{{ .Values.env.HARBOR_USERNAME }}"
+            - name: HARBOR_PASSWORD
+              value: "{{ .Values.env.HARBOR_PASSWORD }}"
+            - name: HARBOR_URL
+              value: "{{ .Values.env.HARBOR_URL }}"
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}

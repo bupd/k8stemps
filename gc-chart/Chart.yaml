@@ -1,0 +1,19 @@
+apiVersion: v2
+name: ground-control
+description: A Helm chart for Harbor Satellite - Ground Control
+home: https://goharbor.io
+icon: https://raw.githubusercontent.com/goharbor/website/main/static/img/logos/harbor-icon-color.png
+keywords:
+- satellite
+- ground-control
+- harbor
+maintainers:
+- email: bupdprasanth@gmail.com
+  name: Prasanth Baskar
+- email: vadim@8gears.com
+  name: Vadim Bauer
+sources:
+- https://github.com/container-registry/harbor-satellite
+- https://github.com/bupd/harbor-satellite-helm
+version: 0.1.0
+appVersion: "1.0"

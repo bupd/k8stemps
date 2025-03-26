@@ -1,0 +1,44 @@
+# Default values for Ground Control Helm chart
+
+# Image configuration
+image:
+  repository: "8gears.container-registry.com/harbor-satellite/ground-control"
+  tag: "latest"
+  pullPolicy: "IfNotPresent"
+
+# Image pull secrets (for private Docker registry)
+imagePullSecrets:
+  - name: "8gears-cr-cred"
+
+# Deployment configuration
+replicaCount: 1
+
+# Environment variables for the Ground Control Go app
+env:
+  DB_HOST: "nozomi.proxy.rlwy.net"      # Update with the DB host
+  DB_PORT: "50493"                       # Update with the DB port
+  DB_DATABASE: "railway"                 # Update with the DB name
+  DB_USERNAME: "postgres"                # Update with the DB username
+  DB_PASSWORD: "KByJJJOCzpmwxDZuSyOeFhArCoXRTMHR"  # Update with the DB password
+  APP_ENV: "local"
+  AIR_TOML_LOG_LEVEL: "debug"
+  PORT: "8080"  # Ensure PORT is set here
+  HARBOR_USERNAME: "admin"  # Add Harbor credentials
+  HARBOR_PASSWORD: "Harbor12345"
+  HARBOR_URL: "https://harbor-sat.bupd.xyz"
+
+# Service configuration
+service:
+  name: "gc"
+  port: 80
+  targetPort: 8080
+  type: ClusterIP  # Can be NodePort or LoadBalancer if needed
+
+# Ingress configuration
+ingress:
+  enabled: true
+  host: "gcc.kube.bupd.xyz"
+  tls: false # Disable TLS
+
+# Namespace for resources
+namespace: "grounded"
