@@ -8,7 +8,8 @@ expose:
     # Note: if the "expose.type" is "ingress" and TLS is disabled,
     # the port must be included in the command when pulling/pushing images.
     # Refer to https://github.com/goharbor/harbor/issues/5291 for details.
-    enabled: true
+    enabled: false
+    # enabled: true
     # The source of the tls certificate. Set as "auto", "secret"
     # or "none" and fill the information in the corresponding section
     # 1) auto: generate the tls certificate automatically
@@ -20,7 +21,7 @@ expose:
     auto:
       # The common name used to generate the certificate, it's necessary
       # when the type isn't "ingress"
-      commonName: "harbor-sat.kube.bupd.xyz"
+      commonName: "localhost"
     secret:
       # The name of secret which contains keys named:
       # "tls.crt" - the certificate
@@ -487,8 +488,8 @@ containerSecurityContext:
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: 8gears.container-registry.com/satellite-adp/harbor-nginx-photon
-    tag: dev
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/nginx
+    tag: v2.13.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -518,8 +519,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/satellite-adp/harbor-portal
-    tag: dev
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/portal
+    tag: v2.13.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -558,8 +559,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/satellite-adp/harbor-core
-    tag: dev
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/core
+    tag: v2.13.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -645,8 +646,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/satellite-adp/harbor-jobservice
-    tag: dev
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/jobservice
+    tag: v2.13.0
     # repository: goharbor/harbor-jobservice
     # tag: v2.12.0
   # set the service account to be used, default if left empty
@@ -710,8 +711,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/satellite-adp/harbor-registry-photon
-      tag: dev
+      repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/registry
+      tag: v2.13.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -719,8 +720,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/satellite-adp/harbor-registryctl
-      tag: dev
+      repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/registryctl
+      tag: v2.13.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -799,9 +800,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: goharbor/trivy-adapter-photon
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/trivy-adapter-photon
     # tag the tag for Trivy adapter image
-    tag: v2.12.0
+    tag: v2.13.0
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -893,8 +894,8 @@ database:
   type: internal
   internal:
     image:
-      repository: 8gears.container-registry.com/satellite-adp/harbor-db
-      tag: dev
+      repository: goharbor/harbor-db
+      tag: v2.13.0
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -973,8 +974,8 @@ redis:
   type: internal
   internal:
     image:
-      repository: 8gears.container-registry.com/satellite-adp/harbor-redis-photon
-      tag: dev
+      repository: goharbor/redis-photon
+      tag: v2.13.0
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -1035,8 +1036,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/satellite-adp/harbor-exporter
-    tag: dev
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/cmd/exporter
+    tag: v2.13.0
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
