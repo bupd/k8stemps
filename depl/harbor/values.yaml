@@ -20,7 +20,7 @@ expose:
     auto:
       # The common name used to generate the certificate, it's necessary
       # when the type isn't "ingress"
-      commonName: "debug.kube.bupd.xyz"
+      commonName: "harbor-sat.kube.bupd.xyz"
     secret:
       # The name of secret which contains keys named:
       # "tls.crt" - the certificate
@@ -112,7 +112,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://debug.kube.bupd.xyz
+externalURL: https://harbor-sat.kube.bupd.xyz
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -344,7 +344,7 @@ imagePullPolicy: Always
 
 # Use this set to assign a list of default pullSecrets
 imagePullSecrets:
-#  - name: docker-registry-secret
+ - name: 8gears-cr-cred
 #  - name: internal-registry-secret
 
 # The update strategy for deployments with persistent volumes(jobservice, registry): "RollingUpdate" or "Recreate"
@@ -487,8 +487,8 @@ containerSecurityContext:
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: goharbor/nginx-photon
-    tag: v2.12.0
+    repository: 8gears.container-registry.com/satellite-adp/harbor-nginx-photon
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -518,8 +518,8 @@ nginx:
 
 portal:
   image:
-    repository: goharbor/harbor-portal
-    tag: v2.12.0
+    repository: 8gears.container-registry.com/satellite-adp/harbor-portal
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -558,8 +558,8 @@ portal:
 
 core:
   image:
-    repository: ttl.sh/harbor-next/core
-    tag: debug-dlv
+    repository: 8gears.container-registry.com/satellite-adp/harbor-core
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -645,8 +645,8 @@ core:
 
 jobservice:
   image:
-    repository: ttl.sh/harbor-next/jobservice
-    tag: debug-dlvd
+    repository: 8gears.container-registry.com/satellite-adp/harbor-jobservice
+    tag: dev
     # repository: goharbor/harbor-jobservice
     # tag: v2.12.0
   # set the service account to be used, default if left empty
@@ -710,8 +710,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: goharbor/registry-photon
-      tag: v2.12.0
+      repository: 8gears.container-registry.com/satellite-adp/harbor-registry-photon
+      tag: dev
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -719,8 +719,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: goharbor/harbor-registryctl
-      tag: v2.12.0
+      repository: 8gears.container-registry.com/satellite-adp/harbor-registryctl
+      tag: dev
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -893,8 +893,8 @@ database:
   type: internal
   internal:
     image:
-      repository: goharbor/harbor-db
-      tag: v2.12.0
+      repository: 8gears.container-registry.com/satellite-adp/harbor-db
+      tag: dev
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -973,8 +973,8 @@ redis:
   type: internal
   internal:
     image:
-      repository: goharbor/redis-photon
-      tag: v2.12.0
+      repository: 8gears.container-registry.com/satellite-adp/harbor-redis-photon
+      tag: dev
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -1035,8 +1035,8 @@ redis:
 
 exporter:
   image:
-    repository: goharbor/harbor-exporter
-    tag: v2.12.0
+    repository: 8gears.container-registry.com/satellite-adp/harbor-exporter
+    tag: dev
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
