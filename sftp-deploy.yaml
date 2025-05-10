@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sftpgo
+  labels:
+    app: sftpgo
+spec:
+  replicas: 1  # You can change this to scale the number of pods
+  selector:
+    matchLabels:
+      app: sftpgo
+  template:
+    metadata:
+      labels:
+        app: sftpgo
+    spec:
+      containers:
+      - name: sftpgo
+        image: drakkan/sftpgo:latest
+        ports:
+        - containerPort: 8080
+        - containerPort: 2022
