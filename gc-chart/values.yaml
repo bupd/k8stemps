@@ -28,7 +28,7 @@ env:
   PORT: "8080" # Ensure PORT is set here
   HARBOR_USERNAME: "admin" # Add Harbor credentials
   HARBOR_PASSWORD: "Harbor12345"
-  HARBOR_URL: "https://harbor-sat.bupd.xyz"
+  HARBOR_URL: "https://harbor-sat.kube.bupd.xyz"
 
 # Service configuration
 service:
