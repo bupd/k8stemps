@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ground-control
+  name: ground-control
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ground-control
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ground-control
+    spec:
+      containers:
+      - name: ground-control
+        image: 8gears.container-registry.com/harbor-satellite/ground-control:latest
+      imagePullSecrets:
+      - name: 8gears-cr-cred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gc
+spec:
+  selector:
+    app: ground-control
+  ports:
+    - protocol: TCP
+      port: 80       # Port the service exposes
+      targetPort: 8080  # Port on the container where the app is listening (adjust as needed)
+  type: ClusterIP      # Can be ClusterIP, NodePort, or LoadBalancer based on your needs
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: gc-cert-tls
+  namespace: ground-control
+spec:
+  secretName: gc-cert-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: gc.kube.bupd.xyz
+  dnsNames:
+  - gc.kube.bupd.xyz
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+  name: gc-ingress
+  namespace: ground-control
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: gc.kube.bupd.xyz
+    http:
+      paths:
+      - backend:
+          service:
+            name: gc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - gc.kube.bupd.xyz
+    secretName: gc-cert-tls
