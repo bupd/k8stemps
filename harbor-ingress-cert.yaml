@@ -2,27 +2,28 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: harbor-cert-tls
-  namespace: htest
+  namespace: harbor-satellite
 spec:
   secretName: harbor-cert-tls
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
-  commonName: htest.kube.bupd.xyz
+  commonName: harbor-sat.kube.bupd.xyz
   dnsNames:
-  - htest.kube.bupd.xyz
+  - harbor-sat.kube.bupd.xyz
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    kubernetes.io/ingress.class: nginx
+    # kubernetes.io/ingress.class: nginx
   name: harbor-ingress
-  namespace: htest
+  namespace: harbor-satellite
 spec:
+  ingressClassName: nginx
   rules:
-  - host: htest.kube.bupd.xyz
+  - host: harbor-sat.kube.bupd.xyz
     http:
       paths:
       - backend:
@@ -76,5 +77,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - htest.kube.bupd.xyz
+    - harbor-sat.kube.bupd.xyz
     secretName: harbor-cert-tls
