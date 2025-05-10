@@ -800,7 +800,7 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/trivy-adapter-photon
+    repository: 8gears.container-registry.com/dagger-test/v2.13.0-up/trivy-adapter
     # tag the tag for Trivy adapter image
     tag: v2.13.0
   # set the service account to be used, default if left empty
