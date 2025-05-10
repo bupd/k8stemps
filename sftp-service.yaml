@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sftpgo
+spec:
+  selector:
+    app.kubernetes.io/name: sftpgo
+  ports:
+    - name: web
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30080
+    - name: sftp
+      protocol: TCP
+      port: 22
+      targetPort: 2022
+      nodePort: 30022
+  type: LoadBalancer
