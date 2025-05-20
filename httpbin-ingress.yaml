@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.k8s.io/v1","kind":"Ingress","metadata":{"annotations":{},"name":"httpbin-ingress","namespace":"default"},"spec":{"rules":[{"http":{"paths":[{"backend":{"service":{"name":"httpbin","port":{"name":"web"}}},"path":"/","pathType":"Prefix"}]}}]}}
+  creationTimestamp: "2025-05-20T00:27:06Z"
+  generation: 1
+  name: httpbin-ingress
+  namespace: default
+  resourceVersion: "818"
+  uid: 262cf7b5-68fe-42f2-99d8-b97a163686f4
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: httpbin
+            port:
+              name: web
+        path: /dash
+        pathType: Prefix
+status:
+  loadBalancer: {}
