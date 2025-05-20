@@ -1,0 +1,31 @@
+# values I use for when testing things in Kind
+# traefik-values.yaml
+# Minimal configuration for dev setup using NodePort and Traefik as default ingress class
+
+---
+providers:
+  kubernetesCRD:
+    namespaces:
+      - default
+      - traefik
+  kubernetesIngress:
+    namespaces:
+      - default
+      - traefik
+
+ports:
+  traefik:
+    expose:
+      default: true
+    nodePort: 32090
+  web:
+    nodePort: 32080
+  websecure:
+    nodePort: 32443
+
+ingressRoute:
+  dashboard:
+    # -- Create an IngressRoute for the dashboard
+    enabled: true
+    entryPoints: ["web", "traefik"]
+    matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
