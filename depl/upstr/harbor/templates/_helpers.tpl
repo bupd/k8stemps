@@ -340,6 +340,11 @@ app: "{{ template "harbor.name" . }}"
   {{- end -}}
 {{- end -}}
 
+{{/* debug component container port */}}
+{{- define "harbor.debugPort" -}}
+4001
+{{- end -}}
+
 {{/* core component service port */}}
 {{- define "harbor.core.servicePort" -}}
   {{- if .Values.internalTLS.enabled -}}

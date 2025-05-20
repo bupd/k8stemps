@@ -331,6 +331,7 @@ spec:
 {{- end }}
         ports:
         - containerPort: {{ template "harbor.registryctl.containerPort" . }}
+        - containerPort: {{ template "harbor.debugPort" . }}
         volumeMounts:
         - name: registry-data
           mountPath: {{ .Values.persistence.imageChartStorage.filesystem.rootdirectory }}

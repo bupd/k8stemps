@@ -156,6 +156,7 @@ spec:
         {{- end }}
         ports:
         - containerPort: {{ template "harbor.core.containerPort" . }}
+        - containerPort: {{ template "harbor.debugPort" . }}
         volumeMounts:
         - name: config
           mountPath: /etc/core/app.conf
