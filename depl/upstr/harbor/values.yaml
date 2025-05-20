@@ -337,7 +337,7 @@ ipFamily:
   ipv4:
     enabled: true
 
-imagePullPolicy: IfNotPresent
+imagePullPolicy: Always
 
 # Use this set to assign a list of default pullSecrets
 imagePullSecrets:
@@ -514,7 +514,7 @@ nginx:
 portal:
   image:
     repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-portal
-    tag: v2.13-ldap-filter
+    tag: v2.13-ldap-filter-debug
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -554,7 +554,7 @@ portal:
 core:
   image:
     repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-core
-    tag: v2.13-ldap-filter
+    tag: v2.13-ldap-filter-debug
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -643,7 +643,7 @@ core:
 jobservice:
   image:
     repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-jobservice
-    tag: v2.13-ldap-filter
+    tag: v2.13-ldap-filter-debug
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/registry
-      tag: v2.13-ldap-filter
+      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registry
+      tag: v2.13-ldap-filter-debug
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -715,7 +715,7 @@ registry:
   controller:
     image:
       repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registryctl
-      tag: v2.13-ldap-filter
+      tag: v2.13-ldap-filter-debug
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -1039,7 +1039,7 @@ redis:
 exporter:
   image:
     repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-exporter
-    tag: v2.13-ldap-filter
+    tag: v2.13-ldap-filter-debug
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
