@@ -388,7 +388,7 @@ enableMigrateHelmHook: false
 # uaaSecretName:
 
 metrics:
-  enabled: false
+  enabled: true
   core:
     path: /metrics
     port: 8001
