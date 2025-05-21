@@ -508,32 +508,7 @@
           },
           "unit": "short"
         },
-        "overrides": [
-          {
-            "__systemRef": "hideSeriesFrom",
-            "matcher": {
-              "id": "byNames",
-              "options": {
-                "mode": "exclude",
-                "names": [
-                  "harbor_statistics_total_storage_consumption {__name__=\"harbor_statistics_total_storage_consumption\", container=\"exporter\", endpoint=\"http-metrics\", instance=\"10.244.2.12:8001\", job=\"harbor\", namespace=\"harbor\", pod=\"harbor-exporter-7b9f6fb4db-h5nf6\", service=\"harbor-exporter\"}"
-                ],
-                "prefix": "All except:",
-                "readOnly": true
-              }
-            },
-            "properties": [
-              {
-                "id": "custom.hideFrom",
-                "value": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": true
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
         "h": 7,
@@ -541,13 +516,13 @@
         "x": 8,
         "y": 8
       },
-      "id": 97,
+      "id": 99,
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -562,16 +537,14 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "editorMode": "code",
           "exemplar": true,
-          "expr": "harbor_statistics_total_storage_consumption",
+          "expr": "harbor_project_repo_total",
           "interval": "",
           "legendFormat": "{{project_name}}",
-          "range": true,
           "refId": "A"
         }
       ],
-      "title": "total storage consumption",
+      "title": "Project repo total",
       "type": "timeseries"
     },
     {
@@ -672,12 +645,146 @@
       "type": "timeseries"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 15
+      },
+      "id": 97,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "harbor_statistics_total_project_amount",
+          "interval": "",
+          "legendFormat": "{{project_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "total project amount",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 15
+      },
+      "id": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "harbor_statistics_total_repo_amount",
+          "interval": "",
+          "legendFormat": "{{project_name}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "total repo amount",
+      "type": "stat"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 22
       },
       "id": 10,
       "panels": [],
@@ -748,7 +855,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 16
+        "y": 23
       },
       "id": 14,
       "options": {
@@ -847,7 +954,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 16
+        "y": 23
       },
       "id": 26,
       "options": {
@@ -946,7 +1053,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 16
+        "y": 23
       },
       "id": 30,
       "options": {
@@ -954,7 +1061,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": false
+          "showLegend": true
         },
         "tooltip": {
           "hideZeros": false,
@@ -985,7 +1092,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 30
       },
       "id": 52,
       "panels": [],
@@ -1056,7 +1163,7 @@
         "h": 8,
         "w": 6,
         "x": 0,
-        "y": 24
+        "y": 31
       },
       "id": 70,
       "options": {
@@ -1153,7 +1260,7 @@
         "h": 8,
         "w": 6,
         "x": 6,
-        "y": 24
+        "y": 31
       },
       "id": 94,
       "options": {
@@ -1250,7 +1357,7 @@
         "h": 8,
         "w": 6,
         "x": 12,
-        "y": 24
+        "y": 31
       },
       "id": 66,
       "options": {
@@ -1347,7 +1454,7 @@
         "h": 8,
         "w": 6,
         "x": 18,
-        "y": 24
+        "y": 31
       },
       "id": 56,
       "options": {
@@ -1444,7 +1551,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 32
+        "y": 39
       },
       "id": 62,
       "options": {
@@ -1542,7 +1649,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 32
+        "y": 39
       },
       "id": 60,
       "options": {
@@ -1639,7 +1746,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 32
+        "y": 39
       },
       "id": 68,
       "options": {
@@ -1736,7 +1843,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 40
+        "y": 47
       },
       "id": 96,
       "options": {
@@ -1833,7 +1940,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 40
+        "y": 47
       },
       "id": 54,
       "options": {
@@ -1931,7 +2038,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 40
+        "y": 47
       },
       "id": 95,
       "options": {
@@ -1970,7 +2077,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 55
       },
       "id": 74,
       "panels": [],
@@ -2042,7 +2149,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 49
+        "y": 56
       },
       "id": 92,
       "options": {
@@ -2140,7 +2247,7 @@
         "h": 9,
         "w": 8,
         "x": 8,
-        "y": 49
+        "y": 56
       },
       "id": 86,
       "options": {
@@ -2237,7 +2344,7 @@
         "h": 9,
         "w": 8,
         "x": 16,
-        "y": 49
+        "y": 56
       },
       "id": 90,
       "options": {
@@ -2335,7 +2442,7 @@
         "h": 5,
         "w": 8,
         "x": 0,
-        "y": 58
+        "y": 65
       },
       "id": 78,
       "options": {
@@ -2432,7 +2539,7 @@
         "h": 5,
         "w": 8,
         "x": 8,
-        "y": 58
+        "y": 65
       },
       "id": 88,
       "options": {
@@ -2471,7 +2578,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 70
       },
       "id": 32,
       "panels": [],
@@ -2542,7 +2649,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 64
+        "y": 71
       },
       "id": 35,
       "options": {
@@ -2639,7 +2746,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 64
+        "y": 71
       },
       "id": 36,
       "options": {
@@ -2736,7 +2843,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 64
+        "y": 71
       },
       "id": 40,
       "options": {
@@ -2833,7 +2940,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 72
+        "y": 79
       },
       "id": 44,
       "options": {
@@ -2930,7 +3037,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 72
+        "y": 79
       },
       "id": 46,
       "options": {
@@ -2994,5 +3101,5 @@
   "timezone": "",
   "title": "Harbor",
   "uid": "iRBnfkZhQ",
-  "version": 4
+  "version": 11
 }
