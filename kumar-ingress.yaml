@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: my-kumar-ingress
-  namespace: htest # Must be in the same namespace as your service
+  namespace: harbor # Must be in the same namespace as your service
   annotations:
     # Optional: If you have multiple Ingress controllers, ensure Traefik is used
     # ingress.kubernetes.io/router.entrypoints: web,websecure # If you use custom entrypoints
