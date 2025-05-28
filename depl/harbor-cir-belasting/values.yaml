@@ -482,7 +482,7 @@ containerSecurityContext:
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-nginx
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-nginx
     tag: v2.13-ldap-filter
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -513,8 +513,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-portal
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-portal
+    tag: latest
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -553,8 +553,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-core
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-core
+    tag: latest
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -642,8 +642,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-jobservice
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-jobservice
+    tag: latest
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registry
-      tag: v2.13-ldap-filter-debug
+      repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-registry
+      tag: latest
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -714,8 +714,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registryctl
-      tag: v2.13-ldap-filter-debug
+      repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-registryctl
+      tag: latest
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -794,7 +794,7 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/trivy-adapter
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/trivy-adapter
     # tag the tag for Trivy adapter image
     tag: v2.13-ldap-filter
   # set the service account to be used, default if left empty
@@ -1038,8 +1038,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-exporter
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/dagger-test/belasting/cir/harbor-exporter
+    tag: latest
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
