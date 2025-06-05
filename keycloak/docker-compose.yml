@@ -15,36 +15,36 @@ services:
       - harbor
     labels:
       - traefik.enable=false
-keycloak:
+  keycloak:
     image: local/keycloak:17.0.0
     build:
       context: .
-    command: start
-    expose:
-      - 8080
-    environment:
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_DB: postgres
-      KC_DB_SCHEMA: public
-      KC_DB_URL_HOST: postgres
-      KC_DB_URL_DATABASE: keycloak
-      KC_DB_USERNAME: ${POSTGRES_USER}
-      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
-      KC_HOSTNAME: keycloak.example.jp
-      KC_PROXY: edge
-      KC_HTTP_ENABLED: "true"
-      PROXY_ADDRESS_FORWARDING: "true"
-      KEYCLOAK_HOSTNAME: keycloak.example.jp
-    depends_on:
-      - postgres
-    networks:
-      - harbor
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.keycloak.entrypoints=websecure
-      - traefik.http.routers.keycloak.rule=Host(`keycloak.example.jp`)
-      - traefik.http.routers.keycloak.tls.certresolver=myresolver
+      command: start
+      expose:
+        - 8080
+      environment:
+        KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+        KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+        KC_DB: postgres
+        KC_DB_SCHEMA: public
+        KC_DB_URL_HOST: postgres
+        KC_DB_URL_DATABASE: keycloak
+        KC_DB_USERNAME: ${POSTGRES_USER}
+        KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+        KC_HOSTNAME: keycloak.example.jp
+        KC_PROXY: edge
+        KC_HTTP_ENABLED: "true"
+        PROXY_ADDRESS_FORWARDING: "true"
+        KEYCLOAK_HOSTNAME: keycloak.example.jp
+      depends_on:
+        - postgres
+      networks:
+        - harbor
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.keycloak.entrypoints=websecure
+        - traefik.http.routers.keycloak.rule=Host(`keycloak.example.jp`)
+        - traefik.http.routers.keycloak.tls.certresolver=myresolver
 networks:
   harbor:
     external: true
