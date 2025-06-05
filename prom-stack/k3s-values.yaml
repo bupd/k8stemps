@@ -167,6 +167,7 @@ prometheusOperator:
 prometheus:
   enabled: true
   prometheusSpec:
+    maximumStartupDurationSeconds: 300
     replicas: 1
     replicaExternalLabelName: "replica"
     ruleSelectorNilUsesHelmValues: false
