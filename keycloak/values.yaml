@@ -1,0 +1,43 @@
+keycloak:
+  extraEnvVars:
+    - name: KEYCLOAK_LOG_LEVEL
+      value: DEBUG
+
+  persistence:
+    enabled: true
+    existingClaim: keycloak-pvc
+
+  ingress:
+    enabled: true
+    hostname: keycloak.local
+    ingressClassName: nginx
+    path: /
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+    tls: false
+
+postgresql:
+  enabled: true
+  postgresqlUsername: keycloak
+  postgresqlPassword: keycloakpassword
+  postgresqlDatabase: keycloakdb
+
+service:
+  type: NodePort
+  nodePorts:
+    http: 30080
+
+readinessProbe:
+  httpGet:
+    path: /realms/master
+    port: http
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "500m"
+  limits:
+    memory: "1Gi"
+    cpu: "1"
