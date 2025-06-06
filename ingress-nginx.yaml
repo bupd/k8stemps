@@ -1,4 +1,5 @@
 # ingress ingress-nginx.yaml
+# an ingress proven to work with k3s and traefik by default
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
