@@ -9,12 +9,12 @@ keycloak:
 
   ingress:
     enabled: true
-    hostname: keycloak.local
+    hostname: keycloaklab.bupd.xyz
     ingressClassName: nginx
     path: /
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
-    tls: false
+    tls: true
 
 postgresql:
   enabled: true
