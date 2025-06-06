@@ -13,7 +13,7 @@ metadata:
   namespace: keycloak
 spec:
   rules:
-  - host: keycloak.lab.bupd.xyz # Change by your domain
+  - host: keycloaklab.bupd.xyz # Change by your domain
     http:
       paths:
       - backend:
@@ -25,5 +25,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - keycloak.lab.bupd.xyz # Change by your domain
-    secretName: keycloak-lab-tls-cert
+    - keycloaklab.bupd.xyz # Change by your domain
+    secretName: keycloaklab-tls-cert
