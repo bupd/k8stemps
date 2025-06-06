@@ -1,0 +1,29 @@
+# ingress ingress-keycloak.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    ingress.kubernetes.io/ssl-redirect: "true"
+    kubernetes.io/ingress.class: traefik
+  labels:
+    app: keycloak
+  name: keycloak
+  namespace: keycloak
+spec:
+  rules:
+  - host: keycloak.lab.bupd.xyz # Change by your domain
+    http:
+      paths:
+      - backend:
+          service:
+            name: keycloak
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - keycloak.lab.bupd.xyz # Change by your domain
+    secretName: keycloak-lab-tls-cert
