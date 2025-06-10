@@ -554,7 +554,7 @@ portal:
 core:
   image:
     repository: 8gears.container-registry.com/dagger-test/hybrid-auth/harbor-core
-    tag: latest
+    tag: latest-ui
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
