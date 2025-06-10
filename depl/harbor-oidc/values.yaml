@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/hybrid-auth/registry-photon
-      tag: latest
+      repository: goharbor/registry-photon
+      tag: v2.13.0
     # resources:
     #  requests:
     #    memory: 256Mi
