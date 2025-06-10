@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-kumar-ingress
+  # namespace: harbor # Must be in the same namespace as your service
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "true"
+    ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # Optional: If you have multiple Ingress controllers, ensure Traefik is used
+    # traefik.ingress.kubernetes.io/router.entrypoints: web,websecure # For older Traefik versions or specific configs
+    ingress.kubernetes.io/router.entrypoints: web,websecure # If you use custom entrypoints
+  labels:
+    app: harbor-smart
+  namespace: harbor-smart
+spec:
+  rules:
+  - host: harbor-smart.lab.bupd.xyz
+    http:
+      paths:
+      - path: /service/ # The path you want to expose
+        pathType: Prefix # Or Exact, if you only want /kumar and nothing else
+        backend:
+          service:
+            name: harbor-smart-core # Name of your Kubernetes Service
+            port:
+              number: 80 # Port your service is exposed on (from the Service definition)
+      - path: /api/ # The path you want to expose
+        pathType: Prefix # Or Exact, if you only want /kumar and nothing else
+        backend:
+          service:
+            name: harbor-smart-core # Name of your Kubernetes Service
+            port:
+              number: 80 # Port your service is exposed on (from the Service definition)
+      - path: /c/ # The path you want to expose
+        pathType: Prefix # Or Exact, if you only want /kumar and nothing else
+        backend:
+          service:
+            name: harbor-smart-core # Name of your Kubernetes Service
+            port:
+              number: 80 # Port your service is exposed on (from the Service definition)
+      - path: / # The path you want to expose
+        pathType: Prefix # Or Exact, if you only want /kumar and nothing else
+        backend:
+          service:
+            name: harbor-smart-portal # Name of your Kubernetes Service
+            port:
+              number: 80 # Port your service is exposed on (from the Service definition)
+      - path: /v2/ # The path you want to expose
+        pathType: Prefix # Or Exact, if you only want /kumar and nothing else
+        backend:
+          service:
+            name: harbor-smart-core # Name of your Kubernetes Service
+            port:
+              number: 80 # Port your service is exposed on (from the Service definition)
+  tls:
+  - hosts:
+    - harbor-smart.lab.bupd.xyz # Change by your domain
+    secretName: harbor-smart-lab-tls-cert
