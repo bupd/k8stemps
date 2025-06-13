@@ -11,10 +11,10 @@ metadata:
   labels:
     app: nginx
   name: nginx
-  namespace: test
+  namespace: punda
 spec:
   rules:
-  - host: testlab.bupd.xyz # Change by your domain
+  - host: punda.home.bupd.xyz # Change by your domain
     http:
       paths:
       - backend:
@@ -26,5 +26,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - testlab.bupd.xyz # Change by your domain
-    secretName: testlab-tls-cert
+    - punda.home.bupd.xyz # Change by your domain
+    secretName: punda-home-tls-cert
