@@ -16,7 +16,7 @@ expose:
     # The tls certificate can be generated manually or by cert manager
     # 3) none: configure no tls certificate for the ingress. If the default
     # tls certificate is configured in the ingress controller, choose this option
-    certSource: none
+    certSource: auto
     auto:
       # The common name used to generate the certificate, it's necessary
       # when the type isn't "ingress"
@@ -109,7 +109,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://harbor-2131.bupd.xyz
+externalURL: https://harbor-test.bupd.xyz
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -124,7 +124,7 @@ persistence:
   # operation. Leaving it empty will delete PVCs after the chart deleted
   # (this does not apply for PVCs that are created for internal database
   # and redis components, i.e. they are never deleted automatically)
-  resourcePolicy: ""
+  resourcePolicy: "keep"
   persistentVolumeClaim:
     registry:
       # Use the existing PVC which must be created manually before bound,
@@ -270,7 +270,7 @@ persistence:
 # The initial password of Harbor admin. Change it from portal after launching Harbor
 # or give an existing secret for it
 # key in secret is given via (default to HARBOR_ADMIN_PASSWORD)
-# existingSecretAdminPassword:
+existingSecretAdminPassword: ""
 existingSecretAdminPasswordKey: HARBOR_ADMIN_PASSWORD
 harborAdminPassword: "Harbor12345"
 
@@ -483,7 +483,7 @@ containerSecurityContext:
 nginx:
   image:
     repository: goharbor/nginx-photon
-    tag: v2.13.1
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -513,8 +513,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-portal
-    tag: v2.13.1
+    repository: goharbor/harbor-portal
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -553,8 +553,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-core
-    tag: v2.13.1
+    repository: goharbor/harbor-core
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -642,8 +642,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-jobservice
-    tag: v2.13.1
+    repository: goharbor/harbor-jobservice
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-registry
-      tag: v2.13.1
+      repository: goharbor/registry-photon
+      tag: dev
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -714,8 +714,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-registryctl
-      tag: v2.13.1
+      repository: goharbor/harbor-registryctl
+      tag: dev
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -794,9 +794,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/trivy-adapter
+    repository: goharbor/trivy-adapter-photon
     # tag the tag for Trivy adapter image
-    tag: v2.13.1
+    tag: dev
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -854,7 +854,7 @@ trivy:
   # Anonymous downloads from GitHub are subject to the limit of 60 requests per hour. Normally such rate limit is enough
   # for production operations. If, for any reason, it's not enough, you could increase the rate limit to 5000
   # requests per hour by specifying the GitHub access token. For more details on GitHub rate limiting please consult
-  # https://v2.13.0eloper.github.com/v3/#rate-limiting
+  # https://developer.github.com/v3/#rate-limiting
   #
   # You can create a GitHub token by following the instructions in
   # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
@@ -889,7 +889,7 @@ database:
   internal:
     image:
       repository: goharbor/harbor-db
-      tag: v2.13.1
+      tag: dev
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -969,7 +969,7 @@ redis:
   internal:
     image:
       repository: goharbor/redis-photon
-      tag: v2.13.1
+      tag: dev
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -1027,8 +1027,8 @@ redis:
     # harborDatabaseIndex: "6"
     # cacheLayerDatabaseIndex: "7"
     # username field can be an empty string, and it will be authenticated against the default user
-    username: "admin"
-    password: "password"
+    username: ""
+    password: ""
     # If using existingSecret, the key must be REDIS_PASSWORD
     existingSecret: ""
   ## Additional deployment annotations
@@ -1038,8 +1038,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-exporter
-    tag: v2.13.1
+    repository: goharbor/harbor-exporter
+    tag: dev
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
