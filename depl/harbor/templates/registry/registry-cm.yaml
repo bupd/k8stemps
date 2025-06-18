@@ -155,7 +155,7 @@ data:
         {{- end }}
       {{- end }}
       cache:
-        layerinfo: inMemory
+        layerinfo: redis
       maintenance:
         uploadpurging:
           {{- if .Values.registry.upload_purging.enabled }}
