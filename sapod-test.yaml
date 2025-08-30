@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busyboxes
+  namespace: default
+spec:
+  serviceAccountName: default
+  automountServiceAccountToken: false
+  nodeName: kind-control-plane
+  volumes:
+    - name: token
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: demo.goharbor.io
+              expirationSeconds: 3600
+              path: token
+  containers:
+    - name: busyboxes
+      image: demo.goharbor.io/library/test-nginx:latest
+      volumeMounts:
+        - name: token
+          mountPath: /var/run/secrets/tokens
