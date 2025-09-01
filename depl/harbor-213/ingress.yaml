@@ -1,60 +1,76 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: harbor-gc-tls
+  namespace: harbor-gc
+spec:
+  secretName: harbor-gc-tls
+  issuerRef:
+    name: letsencrypt-dns
+    kind: ClusterIssuer
+  commonName: harbor.potta.bupd.xyz
+  dnsNames:
+  - harbor.potta.bupd.xyz
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-kumar-ingress
-  # namespace: harbor # Must be in the same namespace as your service
+  name: harbor-gc-ingress
   annotations:
-    ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+    kubernetes.io/ingress.class: traefik
+    # ingress.kubernetes.io/ssl-redirect: "true"
     ingress.kubernetes.io/proxy-body-size: "0"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # nginx.ingress.kubernetes.io/proxy-body-size: "0"
     # Optional: If you have multiple Ingress controllers, ensure Traefik is used
-    # traefik.ingress.kubernetes.io/router.entrypoints: web,websecure # For older Traefik versions or specific configs
-    ingress.kubernetes.io/router.entrypoints: web,websecure # If you use custom entrypoints
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure # For older Traefik versions or specific configs
+    # ingress.kubernetes.io/router.entrypoints: web,websecure # If you use custom entrypoints
   labels:
-    app: harbor-2131
-  # namespace: harbor-smart
+    app: harbor
 spec:
+  ingressClassName: traefik
   rules:
-  - host: harbor-2131.bupd.xyz
+  - host: harbor.potta.bupd.xyz
     http:
       paths:
       - path: /service/ # The path you want to expose
         pathType: Prefix # Or Exact, if you only want /kumar and nothing else
         backend:
           service:
-            name: harbor-2131-core # Name of your Kubernetes Service
+            name: harbor-core # Name of your Kubernetes Service
             port:
               number: 80 # Port your service is exposed on (from the Service definition)
       - path: /api/ # The path you want to expose
         pathType: Prefix # Or Exact, if you only want /kumar and nothing else
         backend:
           service:
-            name: harbor-2131-core # Name of your Kubernetes Service
+            name: harbor-core # Name of your Kubernetes Service
             port:
               number: 80 # Port your service is exposed on (from the Service definition)
       - path: /c/ # The path you want to expose
         pathType: Prefix # Or Exact, if you only want /kumar and nothing else
         backend:
           service:
-            name: harbor-2131-core # Name of your Kubernetes Service
+            name: harbor-core # Name of your Kubernetes Service
             port:
               number: 80 # Port your service is exposed on (from the Service definition)
       - path: / # The path you want to expose
         pathType: Prefix # Or Exact, if you only want /kumar and nothing else
         backend:
           service:
-            name: harbor-2131-portal # Name of your Kubernetes Service
+            name: harbor-portal # Name of your Kubernetes Service
             port:
               number: 80 # Port your service is exposed on (from the Service definition)
       - path: /v2/ # The path you want to expose
         pathType: Prefix # Or Exact, if you only want /kumar and nothing else
         backend:
           service:
-            name: harbor-2131-core # Name of your Kubernetes Service
+            name: harbor-core # Name of your Kubernetes Service
             port:
               number: 80 # Port your service is exposed on (from the Service definition)
   tls:
   - hosts:
-    - harbor-2131.bupd.xyz # Change by your domain
-    secretName: harbor-2131-lab-tls-cert
+    - harbor.potta.bupd.xyz # Change by your domain
+    secretName: harbor-gc-tls

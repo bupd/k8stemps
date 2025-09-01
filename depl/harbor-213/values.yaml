@@ -1,7 +1,7 @@
 expose:
   # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
   # and fill the information in the corresponding section
-  type: clusterIP
+  type: ingress
   tls:
     # Enable TLS or not.
     # Delete the "ssl-redirect" annotations in "expose.ingress.annotations" when TLS is disabled and "expose.type" is "ingress"
@@ -16,7 +16,7 @@ expose:
     # The tls certificate can be generated manually or by cert manager
     # 3) none: configure no tls certificate for the ingress. If the default
     # tls certificate is configured in the ingress controller, choose this option
-    certSource: none
+    certSource: secret
     auto:
       # The common name used to generate the certificate, it's necessary
       # when the type isn't "ingress"
@@ -25,7 +25,7 @@ expose:
       # The name of secret which contains keys named:
       # "tls.crt" - the certificate
       # "tls.key" - the private key
-      secretName: ""
+      secretName: "harbor-potta-lab-tls-cert"
   ingress:
     hosts:
       core: core.harbor.domain
@@ -109,7 +109,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://harbor-2131.bupd.xyz
+externalURL: http://harbor.potta.bupd.xyz
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -442,12 +442,12 @@ trace:
     # jaeger supports two modes:
     #   collector mode(uncomment endpoint and uncomment username, password if needed)
     #   agent mode(uncomment agent_host and agent_port)
-    endpoint: http://hostname:14268/api/traces
+    # endpoint: http://hostname:14268/api/traces
     # username:
     # password:
-    # agent_host: hostname
+    agent_host: jaeger-agent.default.svc
     # export trace data by jaeger.thrift in compact mode
-    # agent_port: 6831
+    agent_port: 6831
   otel:
     endpoint: hostname:4318
     url_path: /v1/traces
@@ -513,8 +513,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-portal
-    tag: v2.13.1
+    repository: 8gears.container-registry.com/8gcr/harbor-portal
+    tag: dev-pprof
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -553,8 +553,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-core
-    tag: v2.13.1
+    repository: 8gears.container-registry.com/8gcr/harbor-core
+    tag: dev-pprof
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -642,8 +642,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-jobservice
-    tag: v2.13.1
+    repository: 8gears.container-registry.com/8gcr/harbor-jobservice
+    tag: dev-pprof
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-registry
-      tag: v2.13.1
+      repository: 8gears.container-registry.com/8gcr/harbor-registry
+      tag: dev-pprof
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -714,8 +714,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-registryctl
-      tag: v2.13.1
+      repository: 8gears.container-registry.com/8gcr/harbor-registryctl
+      tag: dev-pprof
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -725,7 +725,7 @@ registry:
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   nodeSelector: {}
   tolerations: []
@@ -794,9 +794,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/trivy-adapter
+    repository: 8gears.container-registry.com/8gcr/trivy-adapter
     # tag the tag for Trivy adapter image
-    tag: v2.13.1
+    tag: dev-pprof
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -889,7 +889,7 @@ database:
   internal:
     image:
       repository: goharbor/harbor-db
-      tag: v2.13.1
+      tag: v2.13.0
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -969,7 +969,7 @@ redis:
   internal:
     image:
       repository: goharbor/redis-photon
-      tag: v2.13.1
+      tag: v2.13.0
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -1038,8 +1038,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/dagger-test/cr/2.13.1/harbor-exporter
-    tag: v2.13.1
+    repository: 8gears.container-registry.com/8gcr/harbor-exporter
+    tag: dev-pprof
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
