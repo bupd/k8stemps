@@ -1,0 +1,6 @@
+creation_rules:
+  # New rule for Kubernetes Secrets (immich-postgres-user.yaml, etc.)
+  - path_regex: '.*secret.*\.yaml$'
+    encrypted_regex: '(DB_USERNAME|DB_PASSWORD|DB_DATABASE_NAME|username|password)'
+    age: >-
+      age1vgjxqxjsgk0p46f0fyvnvxrd6sceuhqymyt4h5fsgaanrd2vt3yqpa0054
