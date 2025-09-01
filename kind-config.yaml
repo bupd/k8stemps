@@ -1,36 +1,40 @@
+# this config file contains all config fields with comments
+# NOTE: this is not a particularly useful config file
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: worker
-- role: worker
-- role: worker
-- role: control-plane
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
-  extraPortMappings:
-  - containerPort: 32080
-    hostPort: 8080
-    protocol: TCP
-  - containerPort: 32443
-    hostPort: 8443
-    protocol: TCP
-  - containerPort: 32090
-    hostPort: 9000
-    protocol: TCP
-  - containerPort: 30081
-    hostPort: 8081
-    protocol: TCP
-  - containerPort: 30082
-    hostPort: 8082
-    protocol: TCP
-  - containerPort: 32091
-    hostPort: 9042
-    protocol: TCP
-  - containerPort: 32092
-    hostPort: 9142
-    protocol: TCP
 
+
+featureGates:
+  "KubeletServiceAccountTokenForCredentialProviders": true
+
+# patch the generated kubeadm config with some extra settings
+# kubeadmConfigPatches:
+# - |
+#   apiVersion: kubelet.config.k8s.io/v1beta1
+#   kind: KubeletConfiguration
+#   evictionHard:
+#     nodefs.available: "0%"
+# kubeadmConfigPatches:
+# - |
+#   apiVersion: kubeadm.k8s.io/v1beta3
+#   kind: InitConfiguration
+#   nodeRegistration:
+#     kubeletExtraArgs:
+#       image-credential-provider-bin-dir: "/usr/local/bin/k8s-credential-providers"
+#       image-credential-provider-config: "/etc/kubernetes/credential-provider-config.yaml"
+# patch it further using a JSON 6902 patch
+# kubeadmConfigPatchesJSON6902:
+# - group: kubeadm.k8s.io
+#   version: v1beta3
+#   kind: ClusterConfiguration
+#   patch: |
+#     - op: add
+#       path: /apiServer/certSANs/-
+#       value: my-hostname
+# 1 control plane node and 2 workers
+nodes:
+# the control plane node config
+- role: control-plane
+# the workers
+- role: worker
+- role: worker
