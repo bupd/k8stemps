@@ -4,7 +4,7 @@ providers:
 - name: credential-provider-echo-token
   apiVersion: credentialprovider.kubelet.k8s.io/v1
   tokenAttributes:
-    requireServiceAccount: false
+    requireServiceAccount: true
     serviceAccountTokenAudience: "demo.goharbor.io"
     cacheType: Token
   matchImages:
