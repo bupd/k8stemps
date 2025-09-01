@@ -23,7 +23,7 @@ docker cp kind-control-plane:/var/lib/kubelet/kubeadm-flags.env ./kubeadm-flags-
 
 # Append flags if not already present
 if ! grep -q "image-credential-provider" ./kubeadm-flags-kind.env; then
-  echo -n " --image-credential-provider-bin-dir='/etc/kubernetes/credential-providers' --image-credential-provider-config='/etc/kubernetes/credential-providers/config.yml'" >> ./kubeadm-flags-kind.env
+  sed -i "s|\"$| --image-credential-provider-bin-dir='/etc/kubernetes/credential-providers' --image-credential-provider-config='/etc/kubernetes/credential-providers/config.yml'\"|" kubeadm-flags-kind.env
 fi
 
 # Copy back the updated file
@@ -32,6 +32,7 @@ docker cp ./kubeadm-flags-kind.env kind-control-plane:/var/lib/kubelet/kubeadm-f
 # -----------------------------
 # Step 4: Restart kubelet inside control-plane node
 # -----------------------------
+echo "⏳ Restarting kubelet..."
 docker exec -it kind-control-plane bash -c "systemctl daemon-reload && systemctl restart kubelet"
 
 # Wait for nodes to be ready again
@@ -45,12 +46,14 @@ kubectl apply -f node-credential-providers.yaml
 # -----------------------------
 # Step 6: Verify node permissions (example checks)
 # -----------------------------
+echo "⏳ Verifying node permissions to get serviceaccounts..."
 kubectl auth can-i get serviceaccounts --as=system:node:kind-control-plane -n default
 # kubectl auth can-i create serviceaccounts --as=system:node:kind-control-plane -n default || true
 
 # -----------------------------
 # Step 7: Deploy test pod
 # -----------------------------
+echo "🐳 Deploying test pod..." # different emoji here. 🐳 🐋 🐢 🦀 🦞 🐙 🦐 🐠 🐟 🐡 🐬 🦈 🐳 🌈 🌊 🍀 🍁 🍂 🍃 🍄 💐 🌸 💮 🏵 🌹 🥀 🌺 🌻 🌼 🌷 🌱 🪴 🌲 🎄 🎅 🎆 🎇 🧊 🎈 🎉 🎊 🎋 🎌 🎍 🎎 🎏 🎐 🎑 🧨 🎀 🎁 🎗
 kubectl apply -f sapod-test.yaml
 
 # Wait for pod to be running
