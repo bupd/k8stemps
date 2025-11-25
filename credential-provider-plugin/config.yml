@@ -1,15 +1,14 @@
 kind: CredentialProviderConfig
 apiVersion: kubelet.config.k8s.io/v1
 providers:
-- name: credential-provider-echo-token
+- name: credential-provider-echo-token-silly
   apiVersion: credentialprovider.kubelet.k8s.io/v1
   tokenAttributes:
     requireServiceAccount: true
-    serviceAccountTokenAudience: "demo.goharbor.io"
+    serviceAccountTokenAudience: "my-registry"
     cacheType: Token
   matchImages:
-  - "*"
-  - "demo.goharbor.io"
+  - "silly-snyder.container-registry.com"
   defaultCacheDuration: "1h"
 
   # optionally specify the username to include in registry credentials, default is "" if unset

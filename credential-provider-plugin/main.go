@@ -56,6 +56,7 @@ func forwardToWebhook(payload interface{}) {
 }
 
 func main() {
+	// v1.CredentialProviderResponse.CacheKeyType = v1.GlobalPluginCacheKeyType
 	flagset := flag.NewFlagSet("", flag.ExitOnError)
 	flagset.Usage = func() { fmt.Fprintln(os.Stderr, strings.TrimSpace(readme)) }
 	username := flagset.String("username", "", "optionally set the username in the returned registry credentials")
@@ -103,9 +104,9 @@ func handle(username string, stdin io.Reader, stdout io.Writer) error {
 
 	response := &v1.CredentialProviderResponse{
 		TypeMeta:      metav1.TypeMeta{APIVersion: v1.SchemeGroupVersion.String(), Kind: "CredentialProviderResponse"},
-		CacheKeyType:  v1.ImagePluginCacheKeyType,
+		CacheKeyType:  v1.GlobalPluginCacheKeyType,
 		CacheDuration: &metav1.Duration{Duration: time.Hour * 1},
-		Auth:          map[string]v1.AuthConfig{"demo.goharbor.io": {Username: "harbor-cli", Password: "Harbor12345"}},
+		Auth:          map[string]v1.AuthConfig{"silly-snyder.container-registry.com": {Username: "jwt", Password: request.ServiceAccountToken}},
 	}
 	return json.NewEncoder(stdout).Encode(response)
 }
