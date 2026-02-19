@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: harbor-db-nodeport-external
+  # IMPORTANT: Replace <YOUR-NAMESPACE> with the namespace where 'harbor-db' cluster resides
+  namespace: soulmate-golick
+spec:
+  type: NodePort
+  ports:
+    - name: postgres-external
+      protocol: TCP
+      port: 5432       # Cluster-internal port the service listens on
+      targetPort: 5432 # The port of the pods the traffic is forwarded to (PostgreSQL)
+      nodePort: 32533  # The specific NodePort you requested (must be between 30000-32767)
+  selector:
+    # These labels MUST match the labels on the primary PostgreSQL pod
+    # If using CNPG, the 'harbor-db' cluster would create a label like this:
+    cnpg.io/cluster: harbor-db
+    cnpg.io/instanceRole: primary

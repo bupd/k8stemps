@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: harbor-db
+  namespace: soulmate-golick
+spec:
+  # Number of PostgreSQL instances
+  instances: 1
+  # Specify a PostgreSQL image (optional, uses default if not specified)
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  bootstrap:
+    initdb:
+      database: soulmate_golick_harbor
+      owner: soulmate-golick
+  # Define the storage for each instance
+  storage:
+    size: 1Gi
+    # storageClass: standard # Use your cluster's storage class name

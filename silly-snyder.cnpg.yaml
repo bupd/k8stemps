@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: harbor-db
+  namespace: silly-snyder
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  bootstrap:
+    initdb:
+      database: silly_snyder_harbor
+      owner: silly_snyder
+  storage:
+    size: 1Gi
