@@ -46,23 +46,23 @@ metadata:
 spec:
   secretName: static-website-tls
   issuerRef:
-    name: letsencrypt-prod
+    name: letsencrypt-dns
     kind: ClusterIssuer
-  commonName: test.bupd.xyz
+  commonName: test.lab.bupd.xyz
   dnsNames:
-  - test.bupd.xyz
+  - test.lab.bupd.xyz
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-dns
+    kubernetes.io/ingress.class: traefik
   name: kube-certs-ingress
   namespace: static-website
 spec:
   rules:
-  - host: test.bupd.xyz
+  - host: test.lab.bupd.xyz
     http:
       paths:
       - backend:
@@ -74,5 +74,5 @@ spec:
         pathType: Prefix
   tls:
   - hosts:
-    - test.bupd.xyz
+    - test.lab.bupd.xyz
     secretName: static-website-tls
