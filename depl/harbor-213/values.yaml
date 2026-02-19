@@ -513,8 +513,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/8gcr/harbor-portal
-    tag: dev-pprof
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-portal
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -553,8 +553,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/8gcr/harbor-core
-    tag: dev-pprof
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-core
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -642,8 +642,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/8gcr/harbor-jobservice
-    tag: dev-pprof
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-jobservice
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/8gcr/harbor-registry
-      tag: dev-pprof
+      repository: docker.io/goharbor/registry-photon
+      tag: v2.14.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -714,8 +714,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/8gcr/harbor-registryctl
-      tag: dev-pprof
+      repository: docker.io/goharbor/harbor-registryctl
+      tag: v2.14.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -794,9 +794,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/8gcr/trivy-adapter
+    repository: 8gears.container-registry.com/8gcr-dev/trivy-adapter
     # tag the tag for Trivy adapter image
-    tag: dev-pprof
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -1038,8 +1038,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/8gcr/harbor-exporter
-    tag: dev-pprof
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-exporter
+    tag: commercial-federated-idp
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
