@@ -26,3 +26,8 @@ credential-provider-plugin/credential-provider-echo-token-*
 controlplane.yaml
 worker.yaml
 config-control-plane.yaml
+
+# Scratch/debug log dumps
+kumar
+potta
+anal
