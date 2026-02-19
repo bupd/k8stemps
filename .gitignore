@@ -1,2 +1,27 @@
+# Registry pull secrets
 8gears-reg-pull-secret.yaml
 8gears
+new8gcr-dev-reg-pullsecret.yml
+
+# Secrets and tokens
+certmanager-issuer-secret.yaml
+harbor-token.jwt
+jwks.json
+openid-configuration
+
+# Talos configs (contain CA keys and certs)
+talosconfig
+talos/
+test-talos/
+
+# Keycloak env (contains admin passwords)
+keycloak/.env
+
+# Compiled Go binaries
+credential-provider-plugin/credential-provider-echo-token
+credential-provider-plugin/credential-provider-echo-token-*
+
+# Talos machine configs at root (contain cluster secrets)
+controlplane.yaml
+worker.yaml
+config-control-plane.yaml
