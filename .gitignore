@@ -1,7 +1,8 @@
-# Registry pull secrets
+# Registry pull secrets and credentials
 8gears-reg-pull-secret.yaml
 8gears
 new8gcr-dev-reg-pullsecret.yml
+*-cred.env
 
 # Secrets and tokens
 certmanager-issuer-secret.yaml
