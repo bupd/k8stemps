@@ -1,0 +1,5 @@
+# /etc/containerd/certs.d/192.168.0.4:5000/hosts.toml
+server = "https://192.168.0.4:5000"
+
+[host."https://192.168.0.4:5000"]
+  skip_verify = true
