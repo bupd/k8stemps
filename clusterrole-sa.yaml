@@ -1,0 +1,28 @@
+# without this you will get an error like this:
+# Nov 11 12:42:39 archlinux k3s[79861]: E1111 12:42:39.114942   79861 plugin.go:391] Error getting service account token default/default: failed to fetch token: serviceaccounts "default" is forbidden: audience "my-registry" not found in pod spec volume, system:node:archlinux is not authorized to request tokens for this audience
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: allow-token-request-demo
+rules:
+- apiGroups: [""]
+  resources: ["serviceaccounts/token"]
+  verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubelet-allow-token-request-demo
+subjects:
+# for all the nodes
+# - kind: Group
+#   name: system:nodes  # identity of your kubelet
+- kind: User
+  name: system:nodes  # identity of your kubelet
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: allow-token-request-demo
+  apiGroup: rbac.authorization.k8s.io
+
