@@ -109,7 +109,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: http://192.168.0.5
+externalURL: https://192.168.0.8
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -482,8 +482,8 @@ containerSecurityContext:
 # If service exposed via "ingress", the Nginx will not be used
 nginx:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-nginx
-    tag: v2.13-ldap-filter
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-nginx
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -513,8 +513,8 @@ nginx:
 
 portal:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-portal
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-portal
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -553,8 +553,8 @@ portal:
 
 core:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-core
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-core
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -642,8 +642,8 @@ core:
 
 jobservice:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-jobservice
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-jobservice
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -705,8 +705,8 @@ jobservice:
 registry:
   registry:
     image:
-      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registry
-      tag: v2.13-ldap-filter-debug
+      repository: docker.io/goharbor/registry-photon
+      tag: v2.14.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -714,8 +714,8 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-registryctl
-      tag: v2.13-ldap-filter-debug
+      repository: docker.io/goharbor/harbor-registryctl
+      tag: v2.14.0
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -794,9 +794,9 @@ trivy:
   enabled: true
   image:
     # repository the repository for Trivy adapter image
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/trivy-adapter
+    repository: 8gears.container-registry.com/8gcr-dev/trivy-adapter
     # tag the tag for Trivy adapter image
-    tag: v2.13-ldap-filter
+    tag: commercial-federated-idp
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -1038,8 +1038,8 @@ redis:
 
 exporter:
   image:
-    repository: 8gears.container-registry.com/dagger-test/ldap-filter-up/harbor-exporter
-    tag: v2.13-ldap-filter-debug
+    repository: 8gears.container-registry.com/8gcr-dev/harbor-exporter
+    tag: commercial-federated-idp
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
