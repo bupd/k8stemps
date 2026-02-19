@@ -1,0 +1,22 @@
+# test the service account token works for credential provider plugin
+apiVersion: v1
+kind: Pod
+metadata:
+  name: busyboxes
+spec:
+  serviceAccountName: harbor-sa
+  containers:
+  - name: busyboxes
+    image: demo.goharbor.io/library/alpine:latest
+    command: ["sh", "-c", "sleep 3600"]
+    volumeMounts:
+    - name: harbor-token
+      mountPath: /var/run/secrets/tokens
+  volumes:
+  - name: harbor-token
+    projected:
+      sources:
+      - serviceAccountToken:
+          path: harbor-token.jwt
+          audience: demo.goharbor.io
+          expirationSeconds: 3600

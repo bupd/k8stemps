@@ -1,23 +1,23 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: busyboxes
+  name: alpine
   namespace: default
 spec:
   # serviceAccountName: default
   # automountServiceAccountToken: true
   nodeName: kind-control-plane
-  # volumes:
-  #   - name: token
-  #     projected:
-  #       sources:
-  #         - serviceAccountToken:
-  #             audience: demo.goharbor.io
-  #             expirationSeconds: 3600
-  #             path: token
+  volumes:
+    - name: token
+      projected:
+        sources:
+          - serviceAccountToken:
+              audience: my-registry
+              expirationSeconds: 3600
+              path: token
   containers:
-    - name: busyboxes
-      image: demo.goharbor.io/library/test-nginx:latest
+    - name: alpines
+      image: silly-snyder.container-registry.com/library/alpine:latest
       # volumeMounts:
       #   - name: token
       #     mountPath: /var/run/secrets/tokens
