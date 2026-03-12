@@ -1,0 +1,87 @@
+global:
+  storageClass: local-path
+
+manager:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  ingress:
+    enable: true
+    className: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+    path: /
+    pathType: Prefix
+    hosts:
+      - dragonfly.bupd.xyz
+  config:
+    auth:
+      jwt:
+        key: "TjJ4Q0UwNVdWM1V0VGtGVmQyOTRUbVJaWW5kMU1qSkxaVkUyZFdWbQ=="
+
+scheduler:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+seedClient:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1Gi
+    limits:
+      cpu: "4"
+      memory: 4Gi
+  persistence:
+    size: 30Gi
+  config:
+    proxy:
+      prefetch: true
+      registryMirror:
+        addr: https://index.docker.io
+        enableTaskIDBasedBlobDigest: true
+
+client:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+  config:
+    proxy:
+      prefetch: true
+      registryMirror:
+        addr: https://index.docker.io
+        enableTaskIDBasedBlobDigest: true
+
+mysql:
+  primary:
+    persistence:
+      size: 8Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+redis:
+  master:
+    persistence:
+      size: 4Gi
+  replica:
+    replicaCount: 0
