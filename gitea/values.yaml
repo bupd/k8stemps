@@ -1,0 +1,77 @@
+image:
+  rootless: true
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: gitea.bupd.xyz
+      paths:
+        - path: /
+  tls: []
+
+service:
+  http:
+    type: ClusterIP
+    port: 3000
+  ssh:
+    type: ClusterIP
+    port: 22
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "2"
+    memory: 2Gi
+
+persistence:
+  enabled: true
+  size: 20Gi
+  storageClass: local-path
+
+gitea:
+  admin:
+    existingSecret: gitea-admin-secret
+  config:
+    server:
+      DOMAIN: gitea.bupd.xyz
+      ROOT_URL: http://gitea.bupd.xyz/
+      SSH_DOMAIN: gitea.bupd.xyz
+      SSH_PORT: 22
+      START_SSH_SERVER: true
+    service:
+      DISABLE_REGISTRATION: true
+    packages:
+      ENABLED: true
+      LIMIT_TOTAL_OWNER_SIZE: 10 GiB
+    actions:
+      ENABLED: true
+
+postgresql-ha:
+  enabled: false
+
+postgresql:
+  enabled: true
+  global:
+    postgresql:
+      auth:
+        username: gitea
+        password: gitea-db-pass-2026
+        database: gitea
+  primary:
+    persistence:
+      size: 10Gi
+      storageClass: local-path
+
+valkey-cluster:
+  enabled: false
+
+valkey:
+  enabled: false
+
+test:
+  enabled: false
