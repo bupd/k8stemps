@@ -2,21 +2,23 @@
 
 ## Executive Summary
 
-Gitea was deployed into the k3s cluster and exposed at `gitea.bupd.xyz`.
+Gitea was deployed into k3s and exposed at `gitea.bupd.xyz`. The instance was then exercised as more than a Git server:
 
-What was completed live:
+- Git forge
+- container registry
+- npm registry
+- generic package registry
+- template-repo generator
+- issue/milestone/wiki tracker
+- repo migration target
+- OCI artifact store for SBOM/signature-related content
 
-- installed Gitea via the official Helm chart
-- enabled the built-in package registry, including the OCI container registry
-- exposed the service through Traefik on `gitea.bupd.xyz`
-- created an admin account secret in Kubernetes
-- authenticated to the registry with Podman
-- pushed a test image to Gitea
-- removed the local tag and pulled the image back from Gitea
+The result is clear:
 
-The registry round trip succeeded with this image path:
-
-- `gitea.bupd.xyz/giteaadmin/alpine:session-20260312`
+- Gitea is strong as a compact all-in-one internal developer platform
+- package workflows worked well
+- Git/project workflows worked well
+- OCI supply-chain workflows mostly worked, but modern OCI referrers API support is incomplete in this setup
 
 ## Deployment Details
 
@@ -68,7 +70,7 @@ Validated:
 - response included `Docker-Distribution-Api-Version: registry/2.0`
 - this is the expected unauthenticated registry behavior
 
-### 3. Push test
+### 3. Container push test
 
 Validated with Podman:
 
@@ -76,7 +78,7 @@ Validated with Podman:
 - tagged it as `gitea.bupd.xyz/giteaadmin/alpine:session-20260312`
 - pushed it successfully to Gitea
 
-### 4. Pull test
+### 4. Container pull test
 
 Validated with Podman:
 
@@ -86,11 +88,168 @@ Validated with Podman:
 
 This proved the image came back from the remote Gitea registry rather than from an untouched local tag.
 
+### 5. Admin account update
+
+The bootstrap admin state was changed live:
+
+- created admin user `admin`
+- changed password to `Harbor12345`
+- updated Kubernetes secret `gitea-admin-secret` to:
+  - username `admin`
+  - password `Harbor12345`
+- cleared the forced-password-change flag on the new admin account
+
+### 6. Feature-tour repos
+
+Additional Gitea features were exercised live through the API:
+
+- organization: `skunkworks`
+- template repo: `skunkworks/service-template`
+- generated repo from template: `skunkworks/customer-api`
+- wiki page created for the generated repo
+- labels created
+- milestone created
+- issue created and assigned
+- external repo migration tested into `skunkworks/hello-migrated`
+
+Useful URLs:
+
+- org: `http://gitea.bupd.xyz/skunkworks`
+- template repo: `http://gitea.bupd.xyz/skunkworks/service-template`
+- generated repo: `http://gitea.bupd.xyz/skunkworks/customer-api`
+- generated repo wiki: `http://gitea.bupd.xyz/skunkworks/customer-api/wiki/Runbook`
+- migrated repo: `http://gitea.bupd.xyz/skunkworks/hello-migrated`
+
+### 7. npm registry test
+
+Validated:
+
+- generated an access token for `admin`
+- published package `@admin/hello-npm@1.0.0`
+- installed that package from Gitea
+- executed the installed package successfully
+
+Outcome:
+
+- npm publish succeeded
+- npm install succeeded
+- runtime output matched expected package contents
+
+### 8. Generic package registry test
+
+Validated:
+
+- uploaded generic package file `artifact.txt` to package `session-bundle` version `1.0.0`
+- downloaded the same file back from Gitea
+- SHA256 hashes matched exactly
+
+Outcome:
+
+- generic package upload/download worked correctly
+
+### 9. SBOM attach, signing, and referrers behavior
+
+Validated on image:
+
+- `gitea.bupd.xyz/admin/alpine:session-20260312`
+
+Live steps completed:
+
+- pushed the image under the `admin` namespace
+- resolved its digest:
+  - `sha256:1ae801d135528fb118e8b27b757e83d3df9df7780de333a9e31c411dfcf9e373`
+- generated a CycloneDX SBOM with `syft`
+- attached the SBOM as an OCI artifact with `oras`
+- generated a local `cosign` keypair
+- signed the image with `cosign`
+- verified the signature with the generated public key
+
+Important result:
+
+- OCI artifact storage worked
+- cosign signature verification worked
+- OCI 1.1 referrers API discovery returned `unsupported`
+- legacy/tag-based referrer discovery worked
+
+This is the key supply-chain finding from the session.
+
+## Package Inventory Observed
+
+Listing packages through the Gitea API showed at least these package types live in the instance:
+
+- `container`: `alpine`
+- `npm`: `@admin/hello-npm`
+- `generic`: `session-bundle`
+
 ## Operational Notes
 
 - Admin credentials are stored in Kubernetes secret `gitea-admin-secret` in namespace `gitea`.
 - At the time of implementation, this host did not yet resolve `gitea.bupd.xyz`, so a local `/etc/hosts` entry was added for immediate validation.
 - In-cluster TLS is not configured in the Helm values file. Public HTTPS may already be working upstream of k3s; that would be external to this chart configuration. This is an inference from the fact that the deployed ingress is HTTP-only while the public site is reachable over HTTPS.
+- Some registry tooling hit certificate/transport awkwardness when attempting direct HTTPS registry access. For the live validation, plain HTTP and `--tls-verify=false` / equivalent test flags were used.
+- The OCI referrers API itself appears unsupported on this registry path even though artifact attachment and legacy referrer discovery worked.
+
+## Opinionated Assessment
+
+### What Gitea is good at
+
+- consolidating Git, issues, wiki, packages, and light project management under one auth domain
+- giving a small team a real forge without GitLab-scale weight
+- serving as an internal software hub where source, packages, and CI concepts live together
+- handling practical package flows like container images, npm packages, and generic artifacts
+- bootstrapping standardized repos fast with template repositories
+
+### What Gitea is bad at or awkward at
+
+- the supply-chain story is not as smooth as a dedicated registry platform when you push into OCI edge cases
+- modern OCI referrers API behavior is not there in a clean way in this setup
+- package UX is serviceable, but not as specialized or polished as a dedicated artifact manager
+- some workflows still assume you know the package path conventions and auth model already
+- chart defaults still need deliberate hardening for production, especially around cache/session/queue backends and TLS clarity
+
+### What surprised me positively
+
+- npm registry support was easier than expected once a token existed
+- template repo generation is genuinely useful, not just a demo feature
+- generic packages make Gitea more practical than people usually give it credit for
+- for a single service, Gitea covers a lot of day-1 and day-2 developer workflow surface area
+
+### What surprised me negatively
+
+- referrers API support appears incomplete even though OCI artifacts can still be stored
+- registry transport behavior is touchier than it should be when using external tooling
+- the admin bootstrap flow is fine for deployment, but account management becomes manual quickly if you are changing identities after the fact
+
+## Good / Bad Summary
+
+Good:
+
+- fast to stand up
+- broad feature surface
+- strong value density for one service
+- package support is real, not cosmetic
+- good fit for self-hosted internal platforms
+
+Bad:
+
+- OCI advanced workflows are not first-class enough yet
+- registry UX and compatibility are not at Harbor/Nexus depth
+- production hardening still needs more work than the happy path suggests
+- auth and token ergonomics are functional but not elegant
+
+## What We Can Take From It
+
+The practical takeaway is not “replace every specialist tool with Gitea.”
+
+The practical takeaway is:
+
+1. Gitea is an excellent central forge for source, issues, templates, wikis, and common package types.
+2. Gitea is good enough for many internal package workflows, including container, npm, and generic artifacts.
+3. If you care deeply about advanced OCI registry behavior, signatures, referrers, provenance, and ecosystem compatibility, a dedicated registry like Harbor or Nexus still gives you a cleaner long-term story.
+4. The strongest architecture is likely:
+   - Gitea as the forge and collaboration system
+   - Harbor or Nexus as the heavyweight artifact/registry plane when OCI depth matters
+5. If you want fewer moving parts and mostly straightforward developer workflows, Gitea can carry more load than most teams expect.
 
 ## Crazy Useful Things You Can Do With Gitea
 
