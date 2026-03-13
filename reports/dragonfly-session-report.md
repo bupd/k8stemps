@@ -272,11 +272,17 @@ The session proved local cache and peer/proxy behavior, not internet-scale or fl
 
 ## Security And Production Gaps
 
-### 1. Public console credentials were not rotated
+### 1. Public console credentials were rotated, but secret handling still matters
 
-The Dragonfly `root` user exists in the manager database, and I did not complete a password rotation during this session.
+The Dragonfly `root` user password was reset during the session and the live manager database now contains the new bcrypt hash.
 
-This is the biggest open operational risk in the current deployment.
+The credential is stored in Kubernetes secret `dragonfly-admin-credentials` in namespace `dragonfly`.
+
+What remains important is operational hygiene:
+
+- move the credential into your normal secret-management flow
+- restrict who can read namespace secrets
+- rotate it again if this cluster has already been widely exposed
 
 ### 2. In-cluster TLS is not configured
 
@@ -328,8 +334,8 @@ Dragonfly is good when you need distribution acceleration more than you need ano
 
 ## Recommended Next Steps
 
-1. Rotate the Dragonfly root/admin credentials immediately.
-2. Put proper TLS in front of the service with an explicit certificate strategy.
+1. Put proper TLS in front of the service with an explicit certificate strategy.
+2. Move the admin credential into your standard secret-management path and limit secret-reader access.
 3. Move MySQL and Redis to managed or separately operated services if this becomes durable.
 4. Add Prometheus/Grafana monitoring using the official Dragonfly monitoring guidance.
 5. If you want a more honest benchmark, repeat the pull tests across multiple worker nodes with larger images and real contention.
