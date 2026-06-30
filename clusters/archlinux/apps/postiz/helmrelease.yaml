@@ -40,8 +40,10 @@ spec:
                     sed -i 's/&prompt=none//g; s/prompt=none&//g' /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.provider.js /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.page.provider.js
                     node <<'NODE'
                     const fs = require('fs');
-                    const path = '/app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/x.provider.js';
-                    let source = fs.readFileSync(path, 'utf8');
+                    const paths = [
+                      '/app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/x.provider.js',
+                      '/app/apps/workers/dist/libraries/nestjs-libraries/src/integrations/social/x.provider.js',
+                    ];
 
                     function replaceMethod(source, signature, replacement) {
                       const start = source.indexOf(signature);
@@ -61,7 +63,9 @@ spec:
                       throw new Error(`Could not replace ${signature}`);
                     }
 
-                    source = replaceMethod(source, 'async post(id, accessToken, postDetails)', `async post(id, accessToken, postDetails) {
+                    for (const path of paths) {
+                      let source = fs.readFileSync(path, 'utf8');
+                      source = replaceMethod(source, 'async post(id, accessToken, postDetails)', `async post(id, accessToken, postDetails) {
                             const bridgeUrl = process.env.X_BRIDGE_URL || 'http://postiz-x-cookie-bridge.postiz.svc.cluster.local/post';
                             const headers = { 'content-type': 'application/json' };
                             if (process.env.X_BRIDGE_TOKEN) {
@@ -94,7 +98,8 @@ spec:
                             }));
                         }`);
 
-                    fs.writeFileSync(path, source);
+                      fs.writeFileSync(path, source);
+                    }
                     NODE
                     nginx
                     exec pnpm run pm2
