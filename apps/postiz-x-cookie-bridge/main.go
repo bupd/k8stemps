@@ -8,8 +8,10 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,6 +19,7 @@ import (
 )
 
 const maxRequestBytes = 2 << 20
+const maxMediaBytes = 20 << 20
 
 var xStatusURLPattern = regexp.MustCompile(`https://(?:x|twitter)\.com/(?:i/web/status|[^/\s]+/status)/([0-9]+)`)
 
@@ -147,7 +150,17 @@ func (s *server) post(ctx context.Context, post postItem, dryRun bool) (postResu
 
 	args := append([]string{}, s.crosspostArg...)
 	if len(post.Media) > 0 && strings.TrimSpace(post.Media[0].Path) != "" {
-		args = append(args, "--image", strings.TrimSpace(post.Media[0].Path))
+		mediaPath := strings.TrimSpace(post.Media[0].Path)
+		cleanup := func() {}
+		var err error
+		if !dryRun {
+			mediaPath, cleanup, err = localMediaPath(ctx, mediaPath)
+			if err != nil {
+				return postResult{}, err
+			}
+			defer cleanup()
+		}
+		args = append(args, "--image", mediaPath)
 		if alt := strings.TrimSpace(post.Media[0].Alt); alt != "" {
 			args = append(args, "--image-alt", alt)
 		}
@@ -191,6 +204,63 @@ func (s *server) post(ctx context.Context, post postItem, dryRun bool) (postResu
 		Status:     "posted",
 		Stdout:     text,
 	}, nil
+}
+
+func localMediaPath(ctx context.Context, path string) (string, func(), error) {
+	mediaURL, err := url.Parse(path)
+	if err != nil || mediaURL.Scheme == "" {
+		return path, func() {}, nil
+	}
+	if mediaURL.Scheme != "http" && mediaURL.Scheme != "https" {
+		return "", nil, fmt.Errorf("unsupported media URL scheme %q", mediaURL.Scheme)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, nil)
+	if err != nil {
+		return "", nil, fmt.Errorf("create media request: %w", err)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", nil, fmt.Errorf("download media: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return "", nil, fmt.Errorf("download media: unexpected status %s", resp.Status)
+	}
+
+	ext := filepath.Ext(mediaURL.Path)
+	if len(ext) > 16 {
+		ext = ""
+	}
+	file, err := os.CreateTemp("", "postiz-x-media-*"+ext)
+	if err != nil {
+		return "", nil, fmt.Errorf("create media temp file: %w", err)
+	}
+
+	cleanup := func() {
+		if err := os.Remove(file.Name()); err != nil && !errors.Is(err, os.ErrNotExist) {
+			slog.Warn("remove media temp file", "path", file.Name(), "error", err)
+		}
+	}
+
+	written, err := io.Copy(file, io.LimitReader(resp.Body, maxMediaBytes+1))
+	closeErr := file.Close()
+	if err != nil {
+		cleanup()
+		return "", nil, fmt.Errorf("write media temp file: %w", err)
+	}
+	if closeErr != nil {
+		cleanup()
+		return "", nil, fmt.Errorf("close media temp file: %w", closeErr)
+	}
+	if written > maxMediaBytes {
+		cleanup()
+		return "", nil, fmt.Errorf("media file exceeds %d bytes", maxMediaBytes)
+	}
+
+	return file.Name(), cleanup, nil
 }
 
 func (r postRequest) normalizedPosts() []postItem {
