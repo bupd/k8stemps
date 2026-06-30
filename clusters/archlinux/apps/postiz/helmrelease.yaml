@@ -103,15 +103,19 @@ spec:
 
                     const providerFactoryPath = '/app/apps/backend/dist/apps/backend/src/services/auth/providers/providers.factory.js';
                     let providerFactory = fs.readFileSync(providerFactoryPath, 'utf8');
+                    const googleProviderMatch = /case client_1\.Provider\.GOOGLE:\s*return new google_provider_1\.GoogleProvider\(\);\s*case client_1\.Provider\.FARCASTER:/;
+                    if (!googleProviderMatch.test(providerFactory)) {
+                      throw new Error('Could not find Google auth provider factory case');
+                    }
                     providerFactory = providerFactory.replace(
+                      googleProviderMatch,
                       `case client_1.Provider.GOOGLE:
-                                return new google_provider_1.GoogleProvider();`,
-                      `case client_1.Provider.GOOGLE:
-                                throw new Error('Google login is disabled');`
+                                throw new Error('Google login is disabled');
+                            case client_1.Provider.FARCASTER:`
                     );
                     fs.writeFileSync(providerFactoryPath, providerFactory);
 
-                    const nginxPath = '/app/var/docker/nginx.conf';
+                    const nginxPath = '/etc/nginx/nginx.conf';
                     let nginx = fs.readFileSync(nginxPath, 'utf8');
                     if (!nginx.includes('Google login is disabled')) {
                       nginx = nginx.replace(
