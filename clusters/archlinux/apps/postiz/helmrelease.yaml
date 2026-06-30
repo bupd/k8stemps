@@ -100,6 +100,95 @@ spec:
 
                       fs.writeFileSync(path, source);
                     }
+
+                    const authControllerPath = '/app/apps/backend/dist/apps/backend/src/api/routes/auth.controller.js';
+                    let authController = fs.readFileSync(authControllerPath, 'utf8');
+                    authController = replaceMethod(authController, 'async canRegister()', `async canRegister() {
+                            return { register: false };
+                        }`);
+                    authController = replaceMethod(authController, 'async register(req, body, response, ip, userAgent)', `async register(req, body, response, ip, userAgent) {
+                            return response.status(403).send('Registration is disabled');
+                        }`);
+                    authController = replaceMethod(authController, 'async login(req, body, response, ip, userAgent)', `async login(req, body, response, ip, userAgent) {
+                            if (String(body?.provider || '').toUpperCase() === 'GOOGLE') {
+                                return response.status(403).send('Google login is disabled');
+                            }
+                            try {
+                                const getOrgFromCookie = this._authService.getOrgFromCookie(req?.cookies?.org);
+                                const { jwt, addedOrg } = await this._authService.routeAuth(body.provider, body, ip, userAgent, getOrgFromCookie);
+                                response.cookie('auth', jwt, {
+                                    domain: (0, subdomain_management_1.getCookieUrlFromDomain)(process.env.FRONTEND_URL),
+                                    ...(!process.env.NOT_SECURED
+                                        ? {
+                                            secure: true,
+                                            httpOnly: true,
+                                            sameSite: 'none',
+                                        }
+                                        : {}),
+                                    expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+                                });
+                                if (process.env.NOT_SECURED) {
+                                    response.header('auth', jwt);
+                                }
+                                if (typeof addedOrg !== 'boolean' && addedOrg?.organizationId) {
+                                    response.cookie('showorg', addedOrg.organizationId, {
+                                        domain: (0, subdomain_management_1.getCookieUrlFromDomain)(process.env.FRONTEND_URL),
+                                        ...(!process.env.NOT_SECURED
+                                            ? {
+                                                secure: true,
+                                                httpOnly: true,
+                                                sameSite: 'none',
+                                            }
+                                            : {}),
+                                        expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+                                    });
+                                    if (process.env.NOT_SECURED) {
+                                        response.header('showorg', addedOrg.organizationId);
+                                    }
+                                }
+                                response.header('reload', 'true');
+                                response.status(200).json({
+                                    login: true,
+                                });
+                            }
+                            catch (e) {
+                                response.status(400).send(e.message);
+                            }
+                        }`);
+                    authController = replaceMethod(authController, 'oauthLink(provider, query)', `oauthLink(provider, query) {
+                            if (String(provider || '').toUpperCase() === 'GOOGLE') {
+                                throw new common_1.ForbiddenException('Google login is disabled');
+                            }
+                            return this._authService.oauthLink(provider, query);
+                        }`);
+                    authController = replaceMethod(authController, 'async oauthExists(code, provider, response)', `async oauthExists(code, provider, response) {
+                            if (String(provider || '').toUpperCase() === 'GOOGLE') {
+                                return response.status(403).send('Google login is disabled');
+                            }
+                            const { jwt, token } = await this._authService.checkExists(provider, code);
+                            if (token) {
+                                return response.json({ token });
+                            }
+                            response.cookie('auth', jwt, {
+                                domain: (0, subdomain_management_1.getCookieUrlFromDomain)(process.env.FRONTEND_URL),
+                                ...(!process.env.NOT_SECURED
+                                    ? {
+                                        secure: true,
+                                        httpOnly: true,
+                                        sameSite: 'none',
+                                    }
+                                    : {}),
+                                expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+                            });
+                            if (process.env.NOT_SECURED) {
+                                response.header('auth', jwt);
+                            }
+                            response.header('reload', 'true');
+                            response.status(200).json({
+                                login: true,
+                            });
+                        }`);
+                    fs.writeFileSync(authControllerPath, authController);
                     NODE
                     nginx
                     exec pnpm run pm2
@@ -144,7 +233,7 @@ spec:
       NEXT_PUBLIC_BACKEND_URL: "https://postiz.bupd.xyz/api"
       BACKEND_INTERNAL_URL: "http://localhost:3000"
       IS_GENERAL: "true"
-      DISABLE_REGISTRATION: "false"
+      DISABLE_REGISTRATION: "true"
       STORAGE_PROVIDER: "local"
       UPLOAD_DIRECTORY: "/uploads"
       NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
