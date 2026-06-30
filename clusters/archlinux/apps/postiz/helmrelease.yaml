@@ -20,6 +20,26 @@ spec:
   upgrade:
     remediation:
       retries: 3
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: postiz-postiz-app
+            patch: |
+              - op: add
+                path: /spec/template/spec/containers/0/command
+                value:
+                  - /bin/sh
+                  - -lc
+              - op: add
+                path: /spec/template/spec/containers/0/args
+                value:
+                  - |
+                    set -e
+                    sed -i 's/&prompt=none//g; s/prompt=none&//g' /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.provider.js /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.page.provider.js
+                    nginx
+                    exec pnpm run pm2
   valuesFrom:
     - kind: Secret
       name: postiz-helm-values
@@ -30,7 +50,7 @@ spec:
       tag: v2.11.2
       pullPolicy: IfNotPresent
     podAnnotations:
-      postiz.bupd.xyz/restarted-at: "2026-06-30T10:17:59Z"
+      postiz.bupd.xyz/restarted-at: "2026-06-30T10:30:11Z"
     replicaCount: 1
     service:
       type: ClusterIP
