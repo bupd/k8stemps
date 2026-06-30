@@ -131,7 +131,26 @@ spec:
                     fs.writeFileSync(nginxPath, nginx);
                     NODE
                     nginx
-                    exec pnpm run pm2
+                    pm2 delete all || true
+                    pnpm run prisma-db-push
+                    pnpm run --parallel pm2
+
+                    wait_for_backend() {
+                      for i in $(seq 1 24); do
+                        if netstat -lntp 2>/dev/null | grep -q ':3000 '; then
+                          return 0
+                        fi
+                        sleep 5
+                      done
+                      return 1
+                    }
+
+                    if ! wait_for_backend; then
+                      pm2 restart backend
+                      wait_for_backend || true
+                    fi
+
+                    exec pm2 logs
   valuesFrom:
     - kind: Secret
       name: postiz-helm-values
