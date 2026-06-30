@@ -7,7 +7,7 @@ creation_rules:
     encrypted_regex: '^(data|stringData)$'
     age: >-
       age1vgjxqxjsgk0p46f0fyvnvxrd6sceuhqymyt4h5fsgaanrd2vt3yqpa0054
-  - path_regex: 'clusters/archlinux/apps/postiz-x-cookie-bridge/(.*\.sops\.yaml|secrets\.yaml)$'
+  - path_regex: 'clusters/archlinux/apps/postiz-x-cookie-bridge/.*\.yaml$'
     encrypted_regex: '^(data|stringData)$'
     age: >-
       age1vgjxqxjsgk0p46f0fyvnvxrd6sceuhqymyt4h5fsgaanrd2vt3yqpa0054
