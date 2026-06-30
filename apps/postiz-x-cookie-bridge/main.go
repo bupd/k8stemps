@@ -148,8 +148,11 @@ func (s *server) post(ctx context.Context, post postItem, dryRun bool) (postResu
 		return postResult{}, errors.New("missing message")
 	}
 
-	args := append([]string{}, s.crosspostArg...)
+	baseArgs := append([]string{}, s.crosspostArg...)
+	args := append([]string{}, baseArgs...)
+	hasMedia := false
 	if len(post.Media) > 0 && strings.TrimSpace(post.Media[0].Path) != "" {
+		hasMedia = true
 		mediaPath := strings.TrimSpace(post.Media[0].Path)
 		cleanup := func() {}
 		var err error
@@ -192,6 +195,28 @@ func (s *server) post(ctx context.Context, post postItem, dryRun bool) (postResu
 		return postResult{}, fmt.Errorf("crosspost timed out after %s", s.timeout)
 	}
 	if err != nil {
+		if hasMedia && strings.Contains(text, "Invalid Media (324)") {
+			s.logger.Warn("x rejected media; retrying as text only", "postID", post.ID)
+			retryArgs := append(append([]string{}, baseArgs...), message)
+			retryCmd := exec.CommandContext(cmdCtx, s.crosspostBin, retryArgs...)
+			retryCmd.Env = normalizedCrosspostEnv(os.Environ())
+			output, err = retryCmd.CombinedOutput()
+			text = strings.TrimSpace(string(output))
+			if errors.Is(cmdCtx.Err(), context.DeadlineExceeded) {
+				return postResult{}, fmt.Errorf("crosspost timed out after %s", s.timeout)
+			}
+			if err == nil {
+				releaseURL, postID := xStatusURL(text)
+				s.logger.Info("posted to x without media fallback", "postID", post.ID, "releaseURL", releaseURL)
+				return postResult{
+					ID:         post.ID,
+					PostID:     postID,
+					ReleaseURL: releaseURL,
+					Status:     "posted",
+					Stdout:     text,
+				}, nil
+			}
+		}
 		return postResult{}, fmt.Errorf("crosspost exited: %v: %s", err, text)
 	}
 
