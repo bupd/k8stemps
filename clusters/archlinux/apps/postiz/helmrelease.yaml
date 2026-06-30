@@ -30,7 +30,7 @@ spec:
       tag: v2.11.2
       pullPolicy: IfNotPresent
     podAnnotations:
-      postiz.bupd.xyz/restarted-at: "2026-06-30T09:53:53Z"
+      postiz.bupd.xyz/restarted-at: "2026-06-30T10:17:59Z"
     replicaCount: 1
     service:
       type: ClusterIP
