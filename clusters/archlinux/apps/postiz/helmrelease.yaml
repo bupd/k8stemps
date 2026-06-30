@@ -29,6 +29,8 @@ spec:
       repository: ghcr.io/gitroomhq/postiz-app
       tag: v2.11.2
       pullPolicy: IfNotPresent
+    podAnnotations:
+      postiz.bupd.xyz/restarted-at: "2026-06-30T09:53:53Z"
     replicaCount: 1
     service:
       type: ClusterIP
