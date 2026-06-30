@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postiz-x-cookie-bridge
+  namespace: postiz
+  labels:
+    app.kubernetes.io/name: postiz-x-cookie-bridge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postiz-x-cookie-bridge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postiz-x-cookie-bridge
+    spec:
+      containers:
+        - name: bridge
+          image: ghcr.io/bupd/postiz-x-cookie-bridge:v0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: CROSSPOST_FLAGS
+              value: "-t"
+            - name: CROSSPOST_TIMEOUT
+              value: "180s"
+          envFrom:
+            - secretRef:
+                name: postiz-x-cookie-bridge
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          volumeMounts:
+            - name: uploads-volume
+              mountPath: /uploads
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: uploads-volume
+          persistentVolumeClaim:
+            claimName: postiz-uploads

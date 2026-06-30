@@ -38,6 +38,64 @@ spec:
                   - |
                     set -e
                     sed -i 's/&prompt=none//g; s/prompt=none&//g' /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.provider.js /app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.page.provider.js
+                    node <<'NODE'
+                    const fs = require('fs');
+                    const path = '/app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/x.provider.js';
+                    let source = fs.readFileSync(path, 'utf8');
+
+                    function replaceMethod(source, signature, replacement) {
+                      const start = source.indexOf(signature);
+                      if (start === -1) {
+                        throw new Error(`Could not find ${signature}`);
+                      }
+                      const braceStart = source.indexOf('{', start);
+                      let depth = 0;
+                      for (let i = braceStart; i < source.length; i++) {
+                        const char = source[i];
+                        if (char === '{') depth++;
+                        if (char === '}') depth--;
+                        if (depth === 0) {
+                          return source.slice(0, start) + replacement + source.slice(i + 1);
+                        }
+                      }
+                      throw new Error(`Could not replace ${signature}`);
+                    }
+
+                    source = replaceMethod(source, 'async post(id, accessToken, postDetails)', `async post(id, accessToken, postDetails) {
+                            const bridgeUrl = process.env.X_BRIDGE_URL || 'http://postiz-x-cookie-bridge.postiz.svc.cluster.local/post';
+                            const headers = { 'content-type': 'application/json' };
+                            if (process.env.X_BRIDGE_TOKEN) {
+                                headers.authorization = 'Bearer ' + process.env.X_BRIDGE_TOKEN;
+                            }
+                            const response = await fetch(bridgeUrl, {
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({
+                                    posts: postDetails.map((post) => ({
+                                        id: post.id,
+                                        message: post.message,
+                                        media: (post.media || []).map((media) => ({
+                                            path: media.path,
+                                            alt: media.alt || media.altText || '',
+                                        })),
+                                    })),
+                                }),
+                            });
+                            const body = await response.text();
+                            if (!response.ok) {
+                                throw new Error('X bridge failed: ' + body);
+                            }
+                            const data = JSON.parse(body);
+                            return (data.results || []).map((result, index) => ({
+                                id: result.id || postDetails[index]?.id,
+                                postId: result.postId || 'posted',
+                                releaseURL: result.releaseURL || 'https://x.com',
+                                status: result.status || 'posted',
+                            }));
+                        }`);
+
+                    fs.writeFileSync(path, source);
+                    NODE
                     nginx
                     exec pnpm run pm2
   valuesFrom:
@@ -89,6 +147,8 @@ spec:
       NX_ADD_PLUGINS: "false"
       API_LIMIT: "30"
       MASTODON_URL: "https://mas.to"
+      DISABLE_X_ANALYTICS: "true"
+      X_BRIDGE_URL: "http://postiz-x-cookie-bridge.postiz.svc.cluster.local/post"
     extraVolumes:
       - name: uploads-volume
         persistentVolumeClaim:

@@ -7,6 +7,10 @@ creation_rules:
     encrypted_regex: '^(data|stringData)$'
     age: >-
       age1vgjxqxjsgk0p46f0fyvnvxrd6sceuhqymyt4h5fsgaanrd2vt3yqpa0054
+  - path_regex: 'clusters/archlinux/apps/postiz-x-cookie-bridge/(.*\.sops\.yaml|secrets\.yaml)$'
+    encrypted_regex: '^(data|stringData)$'
+    age: >-
+      age1vgjxqxjsgk0p46f0fyvnvxrd6sceuhqymyt4h5fsgaanrd2vt3yqpa0054
   # New rule for Kubernetes Secrets (immich-postgres-user.yaml, etc.)
   - path_regex: '.*secret.*\.yaml$'
     encrypted_regex: '(DB_USERNAME|DB_PASSWORD|DB_DATABASE_NAME|username|password)'
