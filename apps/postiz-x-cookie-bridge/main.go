@@ -10,12 +10,15 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const maxRequestBytes = 2 << 20
+
+var xStatusURLPattern = regexp.MustCompile(`https://(?:x|twitter)\.com/(?:i/web/status|[^/\s]+/status)/([0-9]+)`)
 
 type server struct {
 	logger       *slog.Logger
@@ -179,10 +182,12 @@ func (s *server) post(ctx context.Context, post postItem, dryRun bool) (postResu
 		return postResult{}, fmt.Errorf("crosspost exited: %v: %s", err, text)
 	}
 
+	releaseURL, postID := xStatusURL(text)
+	s.logger.Info("posted to x", "postID", post.ID, "releaseURL", releaseURL)
 	return postResult{
 		ID:         post.ID,
-		PostID:     "posted",
-		ReleaseURL: "https://x.com",
+		PostID:     postID,
+		ReleaseURL: releaseURL,
 		Status:     "posted",
 		Stdout:     text,
 	}, nil
@@ -279,4 +284,12 @@ func commandPreview(name string, args []string) string {
 		quoted = append(quoted, strconv.Quote(arg))
 	}
 	return strings.Join(quoted, " ")
+}
+
+func xStatusURL(output string) (releaseURL string, postID string) {
+	match := xStatusURLPattern.FindStringSubmatch(output)
+	if len(match) == 2 {
+		return match[0], match[1]
+	}
+	return "https://x.com", "posted"
 }
