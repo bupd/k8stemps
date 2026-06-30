@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz-postgresql
+  namespace: postiz
+  labels:
+    app.kubernetes.io/name: postiz-postgresql
+    app.kubernetes.io/instance: postiz
+spec:
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+  selector:
+    app.kubernetes.io/name: postiz-postgresql
+    app.kubernetes.io/instance: postiz
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postiz-postgresql
+  namespace: postiz
+  labels:
+    app.kubernetes.io/name: postiz-postgresql
+    app.kubernetes.io/instance: postiz
+spec:
+  serviceName: postiz-postgresql
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postiz-postgresql
+      app.kubernetes.io/instance: postiz
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postiz-postgresql
+        app.kubernetes.io/instance: postiz
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:17-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: postgresql
+              containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postiz-postgresql
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postiz
+                - -d
+                - postiz
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postiz
+                - -d
+                - postiz
+            initialDelaySeconds: 30
+            periodSeconds: 10
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 5Gi

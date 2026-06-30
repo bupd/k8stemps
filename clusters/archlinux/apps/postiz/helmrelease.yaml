@@ -1,0 +1,82 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: postiz
+  namespace: postiz
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: postiz-app
+      version: 1.0.5
+      sourceRef:
+        kind: HelmRepository
+        name: postiz
+        namespace: postiz
+      interval: 1h
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: postiz-helm-values
+      valuesKey: values.yaml
+  values:
+    image:
+      repository: ghcr.io/gitroomhq/postiz-app
+      tag: v2.11.2
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    service:
+      type: ClusterIP
+      port: 80
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-http01
+        traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+      hosts:
+        - host: postiz.bupd.xyz
+          paths:
+            - path: /
+              pathType: Prefix
+              port: 80
+      tls:
+        - secretName: postiz-tls
+          hosts:
+            - postiz.bupd.xyz
+    postgresql:
+      enabled: false
+    redis:
+      enabled: false
+    env:
+      MAIN_URL: "https://postiz.bupd.xyz"
+      FRONTEND_URL: "https://postiz.bupd.xyz"
+      NEXT_PUBLIC_BACKEND_URL: "https://postiz.bupd.xyz/api"
+      BACKEND_INTERNAL_URL: "http://localhost:3000"
+      IS_GENERAL: "true"
+      DISABLE_REGISTRATION: "false"
+      STORAGE_PROVIDER: "local"
+      UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_STATIC_DIRECTORY: "/uploads"
+      NX_ADD_PLUGINS: "false"
+      API_LIMIT: "30"
+      MASTODON_URL: "https://mas.to"
+    extraVolumes:
+      - name: uploads-volume
+        persistentVolumeClaim:
+          claimName: postiz-uploads
+    extraVolumeMounts:
+      - name: uploads-volume
+        mountPath: /uploads
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        memory: 2Gi

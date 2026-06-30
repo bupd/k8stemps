@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - source.yaml
+  - postiz-uploads-pvc.yaml
+  - postiz-helm-values.sops.yaml
+  - postiz-postgres-secret.sops.yaml
+  - postiz-postgres.yaml
+  - postiz-redis.yaml
+  - helmrelease.yaml
