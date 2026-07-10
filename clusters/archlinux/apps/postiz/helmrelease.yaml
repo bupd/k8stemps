@@ -198,13 +198,13 @@ spec:
 
                     exec pm2 logs
               - op: add
-                path: /spec/template/spec/containers/0/env/-
+                path: /spec/template/spec/containers/0/env
                 value:
-                  name: INSTAGRAM_BRIDGE_TOKEN
-                  valueFrom:
-                    secretKeyRef:
-                      name: postiz-instagram-session-bridge
-                      key: POSTIZ_INSTAGRAM_BRIDGE_TOKEN
+                  - name: INSTAGRAM_BRIDGE_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: postiz-instagram-session-bridge
+                        key: POSTIZ_INSTAGRAM_BRIDGE_TOKEN
   valuesFrom:
     - kind: Secret
       name: postiz-helm-values
