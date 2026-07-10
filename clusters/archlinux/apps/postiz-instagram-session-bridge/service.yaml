@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postiz-instagram-session-bridge
+  namespace: postiz
+  labels:
+    app.kubernetes.io/name: postiz-instagram-session-bridge
+spec:
+  selector:
+    app.kubernetes.io/name: postiz-instagram-session-bridge
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

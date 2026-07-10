@@ -22,6 +22,10 @@ keycloak/.env
 credential-provider-plugin/credential-provider-echo-token
 credential-provider-plugin/credential-provider-echo-token-*
 
+# Python bytecode
+__pycache__/
+*.py[cod]
+
 # Talos machine configs at root (contain cluster secrets)
 controlplane.yaml
 worker.yaml

@@ -4,3 +4,4 @@ resources:
   - monitoring
   - postiz
   - postiz-x-cookie-bridge
+  - postiz-instagram-session-bridge
