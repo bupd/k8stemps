@@ -9,8 +9,8 @@ FROM ghcr.io/bupd/shitpost@sha256:1f9e65d361957c6b644dea77ba246819a6889683c101f3
 
 COPY --from=builder /postiz-x-cookie-bridge /usr/local/bin/postiz-x-cookie-bridge
 COPY patch-emusks.mjs /tmp/patch-emusks.mjs
-RUN cd /opt/crosspost \
-    && bun add --exact x-client-transaction-id@0.3.1 \
+RUN cd /opt/crosspost/node_modules/emusks \
+    && bun add --production --exact x-client-transaction-id@0.3.1 \
     && test "$(bun -e 'console.log(require("./node_modules/x-client-transaction-id/package.json").version)')" = "0.3.1" \
     && bun /tmp/patch-emusks.mjs \
     && rm /tmp/patch-emusks.mjs
