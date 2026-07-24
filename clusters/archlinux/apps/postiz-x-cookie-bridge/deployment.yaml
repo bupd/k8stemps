@@ -7,6 +7,11 @@ metadata:
     app.kubernetes.io/name: postiz-x-cookie-bridge
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: postiz-x-cookie-bridge
@@ -19,7 +24,7 @@ spec:
         - name: postiz-x-cookie-bridge-ghcr
       containers:
         - name: bridge
-          image: ghcr.io/bupd/postiz-x-cookie-bridge:v0.1.4
+          image: ghcr.io/bupd/postiz-x-cookie-bridge:v0.1.5@sha256:f7146265df8f17066dfff78e542bda3623a86f9bc348754b022ad2e8a270f3d4
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
