@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postiz-linkedin-cookie-bridge
+  namespace: postiz
+  labels:
+    app.kubernetes.io/name: postiz-linkedin-cookie-bridge
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postiz-linkedin-cookie-bridge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postiz-linkedin-cookie-bridge
+    spec:
+      imagePullSecrets:
+        - name: postiz-x-cookie-bridge-ghcr
+      containers:
+        - name: bridge
+          image: ghcr.io/bupd/postiz-linkedin-cookie-bridge:v0.1.0@sha256:fefaea8eece65f1032a2c6ddf3c8ed8bf5bd7bf879538abbf5a78accfe73787b
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: STATE_DIRECTORY
+              value: /state
+          envFrom:
+            - secretRef:
+                name: postiz-linkedin-cookie-bridge
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          volumeMounts:
+            - name: uploads-volume
+              mountPath: /uploads
+              readOnly: true
+            - name: state
+              mountPath: /state
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+      volumes:
+        - name: uploads-volume
+          persistentVolumeClaim:
+            claimName: postiz-uploads
+        - name: state
+          persistentVolumeClaim:
+            claimName: postiz-linkedin-cookie-bridge-state

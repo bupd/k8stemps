@@ -5,3 +5,4 @@ resources:
   - postiz
   - postiz-x-cookie-bridge
   - postiz-instagram-session-bridge
+  - postiz-linkedin-cookie-bridge

@@ -147,6 +147,48 @@ spec:
                       fs.writeFileSync(path, source);
                     }
 
+                    const linkedinPaths = [
+                      '/app/apps/backend/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.provider.js',
+                      '/app/apps/workers/dist/libraries/nestjs-libraries/src/integrations/social/linkedin.provider.js',
+                    ];
+
+                    for (const path of linkedinPaths) {
+                      let source = fs.readFileSync(path, 'utf8');
+                      source = replaceMethod(source, 'async post(id, accessToken, postDetails, integration, type = \'personal\')', `async post(id, accessToken, postDetails, integration, type = 'personal') {
+                            const bridgeUrl = process.env.LINKEDIN_BRIDGE_URL || 'http://postiz-linkedin-cookie-bridge.postiz.svc.cluster.local/post';
+                            const headers = { 'content-type': 'application/json' };
+                            if (process.env.LINKEDIN_BRIDGE_TOKEN) {
+                                headers.authorization = 'Bearer ' + process.env.LINKEDIN_BRIDGE_TOKEN;
+                            }
+                            const response = await fetch(bridgeUrl, {
+                                method: 'POST',
+                                headers,
+                                body: JSON.stringify({
+                                    posts: postDetails.map((post) => ({
+                                        id: post.id,
+                                        message: post.message,
+                                        media: (post.media || []).map((media) => ({
+                                            path: media.path,
+                                            alt: media.alt || media.altText || '',
+                                        })),
+                                    })),
+                                }),
+                            });
+                            const body = await response.text();
+                            if (!response.ok) {
+                                throw new Error('LinkedIn bridge failed: ' + body);
+                            }
+                            const data = JSON.parse(body);
+                            return (data.results || []).map((result, index) => ({
+                                id: result.id || postDetails[index]?.id,
+                                postId: result.postId || 'posted',
+                                releaseURL: result.releaseURL || 'https://www.linkedin.com',
+                                status: result.status || 'posted',
+                            }));
+                        }`);
+                      fs.writeFileSync(path, source);
+                    }
+
                     const providerFactoryPath = '/app/apps/backend/dist/apps/backend/src/services/auth/providers/providers.factory.js';
                     let providerFactory = fs.readFileSync(providerFactoryPath, 'utf8');
                     const googleProviderMatch = /case client_1\.Provider\.GOOGLE:\s*return new google_provider_1\.GoogleProvider\(\);\s*case client_1\.Provider\.FARCASTER:/;
@@ -205,6 +247,11 @@ spec:
                       secretKeyRef:
                         name: postiz-instagram-session-bridge
                         key: POSTIZ_INSTAGRAM_BRIDGE_TOKEN
+                  - name: LINKEDIN_BRIDGE_TOKEN
+                    valueFrom:
+                      secretKeyRef:
+                        name: postiz-linkedin-cookie-bridge
+                        key: POSTIZ_LINKEDIN_BRIDGE_TOKEN
   valuesFrom:
     - kind: Secret
       name: postiz-helm-values
@@ -257,6 +304,7 @@ spec:
       DISABLE_X_ANALYTICS: "true"
       X_BRIDGE_URL: "http://postiz-x-cookie-bridge.postiz.svc.cluster.local/post"
       INSTAGRAM_BRIDGE_URL: "http://postiz-instagram-session-bridge.postiz.svc.cluster.local/post"
+      LINKEDIN_BRIDGE_URL: "http://postiz-linkedin-cookie-bridge.postiz.svc.cluster.local/post"
     extraVolumes:
       - name: uploads-volume
         persistentVolumeClaim:
