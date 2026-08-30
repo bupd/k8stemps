@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        postiz.bupd.xyz/credentials-revision: "2026-07-24-1"
+        postiz.bupd.xyz/credentials-revision: "2026-08-30-1"
       labels:
         app.kubernetes.io/name: postiz-instagram-session-bridge
     spec:
