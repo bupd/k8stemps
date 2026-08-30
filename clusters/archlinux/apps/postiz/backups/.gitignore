@@ -1,0 +1,2 @@
+# Only committed backups are SOPS-encrypted (*.sql.enc). Never commit a raw dump.
+*.sql
