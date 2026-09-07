@@ -44,6 +44,7 @@ type linkedinClient struct {
 	liAt       string
 	jsessionID string
 	userAgent  string
+	orgURN     string
 	mu         sync.Mutex
 }
 
@@ -136,6 +137,7 @@ func newLinkedinClient() (*linkedinClient, error) {
 		liAt:       liAt,
 		jsessionID: jsessionID,
 		userAgent:  envString("LINKEDIN_USER_AGENT", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36"),
+		orgURN:     strings.TrimSpace(os.Getenv("LINKEDIN_ORGANIZATION_URN")),
 	}, nil
 }
 
@@ -256,6 +258,12 @@ func (c *linkedinClient) publish(ctx context.Context, message string, mediaItems
 		"allowedCommentersScope": "ALL",
 		"postState":              "PUBLISHED",
 		"media":                  uploads,
+	}
+
+	// Attribute the post to an organization page instead of the cookie owner's
+	// personal profile. Without this, normShares always posts as the member.
+	if c.orgURN != "" {
+		payload["containerEntity"] = c.orgURN
 	}
 
 	body, status, err := c.doJSON(ctx, &state, http.MethodPost, c.baseURL+"/voyager/api/contentcreation/normShares", payload)
