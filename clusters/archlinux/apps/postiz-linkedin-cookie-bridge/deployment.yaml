@@ -24,7 +24,7 @@ spec:
         - name: postiz-x-cookie-bridge-ghcr
       containers:
         - name: bridge
-          image: ghcr.io/bupd/postiz-linkedin-cookie-bridge:v0.2.0@sha256:c661054f1325ccc5cbca0529929e76c762884dc3dbc6691568c08be34a6a0f37
+          image: ghcr.io/bupd/postiz-linkedin-cookie-bridge:v0.3.0@sha256:0ce16ae48616410dec35eed4a1bd504d605af202f27266a885fbb24f7bb3a97f
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -33,7 +33,7 @@ spec:
             - name: STATE_DIRECTORY
               value: /state
             - name: LINKEDIN_ORGANIZATION_URN
-              value: urn:li:organization:91428601
+              value: urn:li:fsd_company:91428601
           envFrom:
             - secretRef:
                 name: postiz-linkedin-cookie-bridge

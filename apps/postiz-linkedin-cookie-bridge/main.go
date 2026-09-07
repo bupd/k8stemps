@@ -247,6 +247,14 @@ func (c *linkedinClient) publish(ctx context.Context, message string, mediaItems
 		uploads = append(uploads, upload)
 	}
 
+	// Posting as an organization page uses a different creation flow than a
+	// personal share: the voyager GraphQL "DashShares" mutation with
+	// nonMemberActorUrn, not contentcreation/normShares (which is member-only
+	// and rejects an org containerEntity with HTTP 409).
+	if c.orgURN != "" {
+		return c.createOrgShare(ctx, &state, message, uploads)
+	}
+
 	payload := map[string]any{
 		"visibleToConnectionsOnly":  false,
 		"externalAudienceProviders": []any{},
@@ -260,12 +268,6 @@ func (c *linkedinClient) publish(ctx context.Context, message string, mediaItems
 		"media":                  uploads,
 	}
 
-	// Attribute the post to an organization page instead of the cookie owner's
-	// personal profile. Without this, normShares always posts as the member.
-	if c.orgURN != "" {
-		payload["containerEntity"] = c.orgURN
-	}
-
 	body, status, err := c.doJSON(ctx, &state, http.MethodPost, c.baseURL+"/voyager/api/contentcreation/normShares", payload)
 	if err != nil {
 		return "", fmt.Errorf("create LinkedIn post: %w", err)
@@ -276,6 +278,49 @@ func (c *linkedinClient) publish(ctx context.Context, message string, mediaItems
 	match := activityPattern.FindSubmatch(body)
 	if len(match) != 2 {
 		return "", errors.New("create LinkedIn post: response did not contain an activity URN")
+	}
+	return "urn:li:activity:" + string(match[1]), nil
+}
+
+// orgShareQueryID is the persisted-query id for the voyager GraphQL mutation
+// that creates a share attributed to an organization page.
+const orgShareQueryID = "voyagerContentcreationDashShares.ab2036c0a5ac89913595aa11ac5a26f4"
+
+// createOrgShare publishes a post as the organization page identified by
+// c.orgURN (expected form: urn:li:fsd_company:<id>).
+func (c *linkedinClient) createOrgShare(ctx context.Context, state *sessionState, message string, uploads []uploadedMedia) (string, error) {
+	post := map[string]any{
+		"allowedCommentersScope":      "ALL",
+		"intendedShareLifeCycleState": "PUBLISHED",
+		"origin":                      "ORGANIZATION",
+		"visibilityDataUnion":         map[string]any{"visibilityType": "ANYONE"},
+		"commentary": map[string]any{
+			"text":         message,
+			"attributesV2": []any{},
+		},
+		"nonMemberActorUrn": c.orgURN,
+	}
+	if len(uploads) > 0 {
+		post["media"] = uploads
+	}
+
+	payload := map[string]any{
+		"variables":          map[string]any{"post": post},
+		"queryId":            orgShareQueryID,
+		"includeWebMetadata": true,
+	}
+
+	endpoint := c.baseURL + "/voyager/api/graphql?action=execute&queryId=" + orgShareQueryID
+	body, status, err := c.doJSON(ctx, state, http.MethodPost, endpoint, payload)
+	if err != nil {
+		return "", fmt.Errorf("create LinkedIn org post: %w", err)
+	}
+	if status < 200 || status > 299 {
+		return "", fmt.Errorf("create LinkedIn org post: LinkedIn returned HTTP %d", status)
+	}
+	match := activityPattern.FindSubmatch(body)
+	if len(match) != 2 {
+		return "", errors.New("create LinkedIn org post: response did not contain an activity URN")
 	}
 	return "urn:li:activity:" + string(match[1]), nil
 }
