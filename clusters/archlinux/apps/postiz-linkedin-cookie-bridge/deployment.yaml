@@ -24,7 +24,7 @@ spec:
         - name: postiz-x-cookie-bridge-ghcr
       containers:
         - name: bridge
-          image: ghcr.io/bupd/postiz-linkedin-cookie-bridge:v0.4.0@sha256:38334bfcd07fe102846feecee67ca49d12cb4856edc09b10cb7604e7db871a1e
+          image: ghcr.io/bupd/postiz-linkedin-cookie-bridge:v0.4.0@sha256:21669b0abf9a25a9340815a739c286e67d264a2f747f1efd33ae85aa0265a378
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
