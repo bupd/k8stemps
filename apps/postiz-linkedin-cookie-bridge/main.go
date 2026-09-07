@@ -86,6 +86,7 @@ type uploadedMedia struct {
 	Category string `json:"category"`
 	MediaURN string `json:"mediaUrn"`
 	Targets  []any  `json:"tapTargets"`
+	AltText  string `json:"altText"`
 }
 
 func main() {
@@ -244,6 +245,7 @@ func (c *linkedinClient) publish(ctx context.Context, message string, mediaItems
 		if err != nil {
 			return "", err
 		}
+		upload.AltText = item.Alt
 		uploads = append(uploads, upload)
 	}
 
@@ -289,6 +291,13 @@ const orgShareQueryID = "voyagerContentcreationDashShares.ab2036c0a5ac89913595aa
 // createOrgShare publishes a post as the organization page identified by
 // c.orgURN (expected form: urn:li:fsd_company:<id>).
 func (c *linkedinClient) createOrgShare(ctx context.Context, state *sessionState, message string, uploads []uploadedMedia) (string, error) {
+	// The DashShares mutation's media field is a single ShareMediaCreateInput
+	// object (not an array); multi-image org posts use a different, uncaptured
+	// shape, so reject them loudly rather than silently drop images.
+	if len(uploads) > 1 {
+		return "", errors.New("posting more than one image as an organization page is not yet supported")
+	}
+
 	post := map[string]any{
 		"allowedCommentersScope":      "ALL",
 		"intendedShareLifeCycleState": "PUBLISHED",
@@ -300,8 +309,8 @@ func (c *linkedinClient) createOrgShare(ctx context.Context, state *sessionState
 		},
 		"nonMemberActorUrn": c.orgURN,
 	}
-	if len(uploads) > 0 {
-		post["media"] = uploads
+	if len(uploads) == 1 {
+		post["media"] = uploads[0]
 	}
 
 	payload := map[string]any{
@@ -330,6 +339,12 @@ func (c *linkedinClient) uploadImage(ctx context.Context, state *sessionState, f
 		"mediaUploadType": "IMAGE_SHARING",
 		"fileSize":        len(data),
 		"filename":        filename,
+	}
+	// Register the asset as owned by the organization so it can be attached to
+	// an org share; without this the upload defaults to member ownership and the
+	// DashShares mutation rejects it ("Oops - unable to complete").
+	if c.orgURN != "" {
+		payload["nonMemberActorUrn"] = c.orgURN
 	}
 	body, status, err := c.doJSON(ctx, state, http.MethodPost, c.baseURL+"/voyager/api/voyagerVideoDashMediaUploadMetadata?action=upload", payload)
 	if err != nil {
